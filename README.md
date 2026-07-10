@@ -23,24 +23,36 @@ Every decision is scored across two tracks:
 
 Because the technically correct answer delivered badly is still a failed ticket.
 
-## Inside 0.0.1
+## Inside 0.0.5
 
 - **Ticket Queue Scenarios**: playable support tickets with priority levels, client context, branching choices, and coaching feedback.
 - **Dual Scoring**: separate Tech and People points make the soft skills visible without watering down the technical work.
-- **Skill Bites**: short drills for fundamentals like DNS, DHCP, APIPA, and the first five minutes of an "internet is broken" call.
-- **XP and Streaks**: lightweight progression that rewards practice without turning training into paperwork.
-- **Local-First MVP**: no account required, no backend, minimal dependency footprint.
+- **Skill Bites**: short quiz drills for fundamentals, ticket craft, and security habits.
+- **XP, Streaks, and a Daily Bonus**: lightweight progression, a streak flame, and +25 XP for the first ticket you close each day.
+- **Feedback Loop**: every debrief has a "this ticket felt wrong? tell us" link that opens a pre-addressed email.
+- **Local-First**: no account required, no backend, minimal dependency footprint.
 
-Current scenarios:
+### Screenshots
 
-- **Everything Is Down**: a P1 clinic outage with patients in the lobby, dead agents, a failed UPS, and a very real communication clock.
-- **The Password Loop**: a repeat lockout call where identity verification, stale mobile credentials, and empathy all matter.
-- **Printer Down at Dunmore & Vance**: a P2 with a 4 PM court deadline, an angry partner, a jammed spooler queue, and a cable the cleaners knocked loose.
-- **The CEO Email**: a P1 gift-card phishing incident — scope the campaign, contain the compromised mailbox, and coach the reporter without shaming her.
+<p align="center">
+  <img src="docs/assets/screens/home.png" alt="Ticket queue home screen" width="24%" />
+  <img src="docs/assets/screens/scenario.png" alt="Scenario play with branching choices" width="24%" />
+  <img src="docs/assets/screens/note.png" alt="Ticket note coaching feedback" width="24%" />
+  <img src="docs/assets/screens/debrief.png" alt="Ticket debrief with dual scores" width="24%" />
+</p>
 
-Current Skill Bite decks: **Networking First Steps**, **Ticket Craft**, and **Security Basics**.
+### Ticket queue (4 scenarios)
 
-Recent additions also include a daily first-ticket XP bonus and a "this ticket felt wrong" feedback link on every debrief.
+- **Everything Is Down** (P1): a clinic outage with patients in the lobby, dead agents, a failed UPS, and a very real communication clock.
+- **The Password Loop** (P3): a repeat lockout call where identity verification, stale mobile credentials, and empathy all matter.
+- **Printer Down at Dunmore & Vance** (P2): a 4 PM court deadline, an angry partner, a jammed spooler queue, and a cable the cleaners knocked loose.
+- **The CEO Email** (P1): a gift-card phishing incident — scope the campaign, contain the compromised mailbox, and coach the reporter without shaming her.
+
+### Skill Bite decks (3)
+
+- **Networking First Steps**: ping, DNS, DHCP, APIPA — the first five minutes of an "internet is broken" call.
+- **Ticket Craft**: notes worth reading, SLA response vs. resolution, escalations that aren't hot potatoes.
+- **Security Basics**: phishing tells, MFA, least privilege, callback verification.
 
 ## Who It Is For
 
@@ -59,8 +71,8 @@ It is especially useful for teaching:
 Android APKs are available from GitHub Releases:
 
 - Package: `com.opsquest.app`
-- Current version name: `0.0.4`
-- Current version code: `4`
+- Current version name: `0.0.5`
+- Current version code: `5`
 - Releases: <https://github.com/Spillers-Technology/OpsQuest/releases>
 
 ## Run Locally

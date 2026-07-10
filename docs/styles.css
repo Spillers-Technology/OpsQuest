@@ -389,6 +389,50 @@ h1 {
   color: var(--cyan);
 }
 
+.badge.amber {
+  background: rgba(251, 191, 36, 0.14);
+  color: var(--amber);
+}
+
+.badge.green {
+  background: rgba(74, 222, 128, 0.14);
+  color: var(--green);
+}
+
+.gallery-lede {
+  max-width: 640px;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 40px;
+}
+
+.shot {
+  margin: 0;
+}
+
+.shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid rgba(36, 51, 82, 0.95);
+  border-radius: 18px;
+  background: var(--panel);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.32);
+}
+
+.shot figcaption {
+  margin-top: 12px;
+  color: var(--dim);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: center;
+}
+
 .scoreboard {
   padding: 28px;
 }
@@ -519,6 +563,17 @@ footer a {
   .split.reverse,
   .trial {
     grid-template-columns: 1fr;
+  }
+
+  .gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .gallery .shot:last-child {
+    grid-column: 1 / -1;
+    max-width: 52%;
+    margin: 0 auto;
   }
 
   .signal-strip {

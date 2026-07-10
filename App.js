@@ -1,5 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, SafeAreaView, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  SafeAreaView,
+  StyleSheet,
+  Platform,
+  StatusBar as NativeStatusBar,
+} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { C } from './src/theme';
 import {
@@ -166,7 +173,13 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: C.bg },
+  root: {
+    flex: 1,
+    backgroundColor: C.bg,
+    // RN's SafeAreaView is iOS-only; on Android the app draws edge-to-edge
+    // under the translucent status bar, so inset the whole tree below it.
+    paddingTop: Platform.OS === 'android' ? NativeStatusBar.currentHeight ?? 0 : 0,
+  },
   errorCard: {
     margin: 16,
     padding: 16,

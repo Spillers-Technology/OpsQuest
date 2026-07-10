@@ -89,7 +89,7 @@ export default function DebriefScreen({ scenario, result, xpGain, dailyBonus, on
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: C.bg },
-  content: { padding: S.pad, paddingTop: 32, paddingBottom: 48 },
+  content: { padding: S.pad, paddingTop: 32, paddingBottom: 56 },
   header: {
     color: C.dim,
     fontFamily: mono,
@@ -156,6 +156,6 @@ const styles = StyleSheet.create({
   },
   homeText: { color: C.bg, fontFamily: mono, fontSize: 15, fontWeight: 'bold' },
 
-  feedbackBtn: { alignItems: 'center', marginTop: 18 },
+  feedbackBtn: { alignItems: 'center', marginTop: 12, paddingVertical: 12 },
   feedbackText: { color: C.faint, fontFamily: mono, fontSize: 12 },
 });
