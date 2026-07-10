@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "Ops Quest",
+    "slug": "ops-quest",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0B1220",
+    "splash": {
+      "backgroundColor": "#0B1220"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.opsquest.app"
+    }
+  }
+}
