@@ -59,8 +59,8 @@ It is especially useful for teaching:
 Android APKs are available from GitHub Releases:
 
 - Package: `com.opsquest.app`
-- Current version name: `0.0.3`
-- Current version code: `3`
+- Current version name: `0.0.4`
+- Current version code: `4`
 - Releases: <https://github.com/Spillers-Technology/OpsQuest/releases>
 
 ## Run Locally
