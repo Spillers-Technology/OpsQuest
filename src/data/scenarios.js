@@ -367,4 +367,370 @@ export const SCENARIOS = [
       },
     },
   },
+
+  {
+    id: 'printer-dunmore',
+    ticket: 'TKT-2503',
+    title: 'Printer Down at Dunmore & Vance',
+    priority: 'P2',
+    client: 'Dunmore & Vance LLP',
+    blurb: 'Court filing at 4 PM. Nothing on the third floor will print. The partner is calling personally.',
+    maxScore: 15,
+    start: 'n1',
+    nodes: {
+      n1: {
+        text:
+          '14:20. The call comes in from the main line, not the usual assistant:\n\n"This is Gordon Dunmore. My associates have a filing due at the courthouse at FOUR o\'clock and nothing on this floor will print. We pay your firm a great deal of money, and right now I am not sure why."',
+        choices: [
+          {
+            label: '"Understood — a four o\'clock court deadline makes this my top priority, and I\'m starting on it right now. One quick question so I fix the right thing: is it every printer on the floor, or just the big copier?"',
+            next: 'n2',
+            tech: 1,
+            people: 3,
+            quality: 'best',
+            feedback:
+              "Name the deadline back to him, commit, THEN scope. Gordon doesn't need reassurance that printing matters — he needs to hear that you understand what 4 PM means. One sentence buys you the room to actually troubleshoot.",
+          },
+          {
+            label: 'Put him on a brief hold and pull up the print server.',
+            next: 'n2',
+            tech: 1,
+            people: -1,
+            quality: 'ok',
+            feedback:
+              "Right instinct, wrong order. A senior partner who called personally just got silence and hold music. The tech work was going to take the same ninety seconds either way — spending five of them acknowledging the deadline costs nothing.",
+          },
+          {
+            label: '"Printer issues are normally handled as lower priority, but I\'ll see what I can do."',
+            next: 'n2',
+            tech: 0,
+            people: -3,
+            quality: 'bad',
+            feedback:
+              'You just told a client his court deadline is "normally lower priority." Priority isn\'t about the device — it\'s about the impact. A printer blocking a legal filing is a business-down event for that team.',
+          },
+        ],
+      },
+      n2: {
+        text:
+          'Gordon hands you to Priya, his assistant, who actually knows the floor: every attorney on three prints to the big Canon in the copy room. Jobs say "sent," then nothing comes out. Floors two and four are printing fine.\n\nThe filing is about 300 pages across several documents.',
+        choices: [
+          {
+            label: 'Open the print server and look at the queue for that Canon.',
+            next: 'n3',
+            tech: 2,
+            people: 0,
+            quality: 'best',
+            feedback:
+              'One shared printer, many users, jobs vanishing after "sent" — that lives in the server-side queue. When a whole floor shares one device, the queue is where the truth is, and you can see it in seconds without leaving your desk.',
+          },
+          {
+            label: 'Have Priya power-cycle the Canon and wait for it to come back.',
+            next: 'n3',
+            tech: 0,
+            people: 0,
+            quality: 'ok',
+            feedback:
+              "Not crazy — but if the jam is server-side, the reboot changes nothing and you just spent five minutes of a hundred-minute clock waiting on a warm-up cycle. Look at the queue first; it's faster than the printer's boot screen.",
+          },
+          {
+            label: "Remote into an associate's PC and reinstall the printer driver.",
+            next: 'n3',
+            tech: -2,
+            people: 0,
+            quality: 'bad',
+            feedback:
+              "Thirty people are affected. A driver on one PC cannot be the cause, so it cannot be the fix — you'd be repairing one machine out of thirty while the clock runs. Match the fix to the blast radius.",
+          },
+        ],
+      },
+      n3: {
+        text:
+          'The queue tells the story: 41 jobs backed up. At the top, a 600 MB scanned exhibit stuck at "Error — Printing" since 13:52. Everything behind it — including what looks like the filing documents — is just waiting in line.',
+        choices: [
+          {
+            label: 'Cancel only the stuck job, restart the spooler, and tell Priya the queue is moving — and that whoever sent the big scan should re-send it after 4 PM, in smaller chunks.',
+            next: 'n4',
+            tech: 2,
+            people: 1,
+            quality: 'best',
+            feedback:
+              'Surgical. One bad job is holding 40 hostages — remove the one, keep the 40. And telling Priya what happened means the giant scan doesn\'t come right back at 3:45 and jam it again.',
+          },
+          {
+            label: 'Purge the entire queue to clear the error and start fresh.',
+            next: 'n4',
+            tech: -3,
+            people: 0,
+            quality: 'bad',
+            feedback:
+              "Forty of those jobs ARE the filing. Purge the queue and the documents everyone is waiting on silently vanish — nobody gets told to re-print, and you find out at 3:50. Never destroy work you haven't identified.",
+          },
+          {
+            label: 'Reboot the whole print server.',
+            next: 'n4',
+            tech: 0,
+            people: 0,
+            quality: 'ok',
+            feedback:
+              'It would probably work — and it takes printing down for the entire building for ten minutes to fix one queue. When a targeted fix and a sledgehammer both work, the sledgehammer is still the wrong tool.',
+          },
+        ],
+      },
+      n4: {
+        text:
+          "The queue starts draining. Two documents print... then everything stops again. Now the Canon's panel says OFFLINE, and from the server your pings to it are timing out — a few get through, most don't.\n\nThat's a different symptom than ten minutes ago.",
+        choices: [
+          {
+            label: '"Priya — behind the Canon, can you check the network cable where it plugs into the printer and into the wall? Push both ends in firmly and tell me what you feel."',
+            next: 'n5',
+            tech: 2,
+            people: 1,
+            quality: 'best',
+            feedback:
+              "Intermittent ping is physical-layer language: cable, jack, or port — not software. The spooler was real and so is this; two problems can share one ticket. Remote hands can check a cable in ninety seconds.",
+          },
+          {
+            label: 'Restart the spooler again — it worked a minute ago.',
+            next: 'n5',
+            tech: -2,
+            people: 0,
+            quality: 'bad',
+            feedback:
+              'The symptom changed, so the diagnosis has to change with it. Repeating the last fix because it worked once is troubleshooting by superstition — and a spooler restart cannot repair a device the network can barely reach.',
+          },
+          {
+            label: 'Dispatch an on-site tech to look at the printer hardware.',
+            next: 'n5',
+            tech: 0,
+            people: -1,
+            quality: 'ok',
+            feedback:
+              "It probably IS physical — but a truck roll is forty-five minutes against a 4 PM deadline, and Priya is standing next to the printer right now. Exhaust your remote hands before you burn the drive time.",
+          },
+        ],
+      },
+      n5: {
+        text:
+          'Priya: "Oh — this cable is barely IN the wall. The cleaners were moving things back here last night." Click.\n\nPings go solid. The queue drains. She actually laughs: "It\'s printing so fast it\'s scaring me." 15:12 — the associates are collating.',
+        choices: [
+          {
+            label: 'Call Gordon back directly: floor is printing, here\'s what happened, and you\'ll stay on standby until the filing is out the door. Note a follow-up to secure that cable run.',
+            next: 'n6',
+            tech: 1,
+            people: 2,
+            quality: 'best',
+            feedback:
+              'He escalated to you personally, so he hears the resolution personally — that symmetry is what "we pay your firm a great deal of money" wants to see. And the cable that got bumped once will get bumped again; the follow-up is the difference between a fix and a fluke.',
+          },
+          {
+            label: 'Tell Priya it\'s all set and close the ticket.',
+            next: 'n6',
+            tech: 0,
+            people: 0,
+            quality: 'ok',
+            feedback:
+              "Technically resolved — but the angry partner who opened the ticket never hears the ending, so in his memory this stays \"the day IT almost cost us a filing.\" Close the loop with the person who escalated, not just the person who helped.",
+          },
+          {
+            label: 'Close the ticket: "Resolved — cable reseated."',
+            next: 'n6',
+            tech: -1,
+            people: -1,
+            quality: 'bad',
+            feedback:
+              'Four words for a two-cause incident on an angry client\'s deadline. No spooler note, no root cause, no confirmation the filing made it. The next tech to touch this printer — maybe you — starts from zero.',
+          },
+        ],
+      },
+      n6: {
+        text:
+          'Ticket notes: two stacked issues — a 600 MB job wedging the spooler queue, then a dislodged network drop behind the device. Both fixed remotely with client hands. Filing confirmed printed 15:20; follow-up logged to secure the cable run.\n\nGordon, 16:05: "Filed with twenty minutes to spare. Good work."\n\nTicket closed.',
+        end: true,
+      },
+    },
+  },
+
+  {
+    id: 'ceo-email',
+    ticket: 'TKT-2512',
+    title: 'The CEO Email',
+    priority: 'P1',
+    client: 'Copper Kettle Restaurant Group',
+    blurb: '"I think I got scammed." The CEO asked for gift cards. It wasn\'t the CEO.',
+    maxScore: 14,
+    start: 'n1',
+    nodes: {
+      n1: {
+        text:
+          'Tanya from Copper Kettle\'s office calls, talking fast and quiet:\n\n"I think I did something really stupid. Mike — the CEO — emailed me this morning asking me to buy gift cards for a client thank-you. Said it was urgent and confidential. I bought four hundred dollars\' worth at lunch, and I was about to email him the codes when something felt... off. Am I in trouble?"',
+        choices: [
+          {
+            label: '"You are not in trouble — calling us was exactly right. Do NOT send those codes to anyone. Now walk me through it: forward me that email exactly as you got it."',
+            next: 'n2',
+            tech: 0,
+            people: 3,
+            quality: 'best',
+            feedback:
+              'First words matter: stop the loss, kill the shame. These scams are built by professionals to work on smart people — and an employee who feels safe reporting is worth more than any filter you will ever deploy.',
+          },
+          {
+            label: '"Forward me the email and I\'ll take a look."',
+            next: 'n2',
+            tech: 1,
+            people: 0,
+            quality: 'ok',
+            feedback:
+              "Right ask, missing two things: an explicit \"don't send the codes\" — she was minutes from doing it — and a word of reassurance for someone who just asked if she's in trouble. Security incidents are people incidents first.",
+          },
+          {
+            label: '"You almost emailed gift card codes to a stranger? Didn\'t you take the security training last quarter?"',
+            next: 'n2',
+            tech: 0,
+            people: -3,
+            quality: 'bad',
+            feedback:
+              "Congratulations: Tanya will never report anything again, and neither will anyone she tells about this call. Shame doesn't prevent the next incident — it just guarantees you hear about it later, after the money is gone.",
+          },
+        ],
+      },
+      n2: {
+        text:
+          'The email lands in your inbox. From: "Mike Harrelson <mharrelson@copperkettIe-group.com>" — a capital I where the l should be. Urgent tone, "keep this between us," and "I\'m in meetings all day, don\'t call."\n\nClassic. The real question is how big this is.',
+        choices: [
+          {
+            label: 'Run a message trace: who else at Copper Kettle got mail from that lookalike domain?',
+            next: 'n3',
+            tech: 2,
+            people: 0,
+            quality: 'best',
+            feedback:
+              "Phishing is a campaign, not a letter. Tanya is the one who called — she's rarely the only one who received it. Scope first, exactly like an outage: you can't contain what you haven't measured.",
+          },
+          {
+            label: 'Block the sender address and tell Tanya she\'s all set.',
+            next: 'n3',
+            tech: 0,
+            people: 0,
+            quality: 'ok',
+            feedback:
+              "Blocking one address treats the symptom you can see. Attackers rotate senders in minutes — and you still have no idea who else got the email or answered it. Contain after you scope, not instead of scoping.",
+          },
+          {
+            label: 'Reply to the email to string the scammer along and waste their time.',
+            next: 'n3',
+            tech: -2,
+            people: 0,
+            quality: 'bad',
+            feedback:
+              "You just confirmed the mailbox is live and monitored, on company time, mid-incident. This isn't a hobby duel — every minute spent entertaining the attacker is a minute Devon in accounting might be buying cards.",
+          },
+        ],
+      },
+      n3: {
+        text:
+          'The trace comes back ugly: six people received it. Five ignored it. Devon in accounts payable replied "Sure — which cards and how many?" twenty minutes ago.\n\nAnd Tanya adds one more thing: "Monday I got a \'purchase approval\' link from Mike and signed in with my email password. Was that... part of this?"',
+        choices: [
+          {
+            label: 'Treat Tanya\'s account as compromised: reset the password, revoke every active session, check her mailbox rules — and call Devon RIGHT NOW before he buys anything.',
+            next: 'n4',
+            tech: 3,
+            people: 0,
+            quality: 'best',
+            feedback:
+              'Phished credentials mean the attacker may be IN the mailbox now — a reset alone doesn\'t end sessions that are already open, and mailbox rules survive password changes. And Devon is an active bleed: people first, forensics second.',
+          },
+          {
+            label: 'Reset Tanya\'s password and move on to cleanup.',
+            next: 'n4',
+            tech: 1,
+            people: 0,
+            quality: 'ok',
+            feedback:
+              "Necessary but not sufficient. Existing sessions keep working after a reset unless you revoke them, inbox rules persist, and Devon is still typing. A half-contained account compromise isn't contained.",
+          },
+          {
+            label: "Kick off a full antivirus scan on Tanya's PC.",
+            next: 'n4',
+            tech: -2,
+            people: 0,
+            quality: 'bad',
+            feedback:
+              "Nothing was installed — her password was harvested on a fake login page. The scan will come back clean, you'll feel productive, and the attacker will still be logged into her mailbox reading everything. Match the response to the attack.",
+          },
+        ],
+      },
+      n4: {
+        text:
+          "Devon caught in time — he was literally in line at the store. Then you open Tanya's mailbox rules and there it is: created Monday, forwards anything containing \"invoice,\" \"payment,\" or \"gift\" to an outside Gmail address, marks it read.\n\nThat's how the fake Mike knew exactly how to sound like the real one.",
+        choices: [
+          {
+            label: 'Remove the rule, block the lookalike domain, purge the phish from all six mailboxes — and preserve the evidence, then brief the real Mike: this is a reportable incident, not just a bad email.',
+            next: 'n5',
+            tech: 2,
+            people: 1,
+            quality: 'best',
+            feedback:
+              'Contain, clean, and document — in that order. Screenshots of the rule and the message headers are what the insurer, the bank, and possibly law enforcement will ask for. And the CEO learns about his impersonation from you, today, not from a client next month.',
+          },
+          {
+            label: 'Delete the rule, block the domain, close the ticket quietly.',
+            next: 'n5',
+            tech: 1,
+            people: -1,
+            quality: 'ok',
+            feedback:
+              "The technical cleanup is right — but a week of silently forwarded financial email is an incident leadership needs to know about, in writing. If money or client data moved and it surfaces later, \"IT knew and closed the ticket\" is a very bad sentence.",
+          },
+          {
+            label: 'Delete the rule and every trace of the phishing emails so nobody clicks them later.',
+            next: 'n5',
+            tech: -2,
+            people: 0,
+            quality: 'bad',
+            feedback:
+              'You just shredded the evidence. Headers, the rule, the sent replies — that\'s the forensic record of what the attacker saw and did. Purge malicious mail from inboxes, yes, but preserve copies first. "Clean" and "gone" are different goals.',
+          },
+        ],
+      },
+      n5: {
+        text:
+          'By 16:30 it\'s contained: account secured, rule documented and removed, domain blocked, Mike briefed, and the store refunded the unactivated cards.\n\nTanya, one more time: "I still feel so stupid. I talk to Mike every day. How did I not know?"',
+        choices: [
+          {
+            label: '"That email fooled the spam filter too, and it was built from a week of reading real messages. You\'re the one who caught it — reporting it IS the win. Mind if I use it, no names, for a two-minute heads-up to the staff?"',
+            next: 'n6',
+            tech: 0,
+            people: 3,
+            quality: 'best',
+            feedback:
+              'Reframe the reporter as the hero, because she is — her gut feeling beat the filter. And a real, local example (anonymized) teaches the tells better than any generic training slide ever will.',
+          },
+          {
+            label: '"Don\'t worry about it — it\'s all fixed now."',
+            next: 'n6',
+            tech: 0,
+            people: 1,
+            quality: 'ok',
+            feedback:
+              "Kind, but it closes the door on the teachable moment. She asked HOW she missed it — that's an invitation to show her the tells: urgency, secrecy, a payment method no CEO uses, and a domain one letter off.",
+          },
+          {
+            label: '"Just double-check the sender address next time."',
+            next: 'n6',
+            tech: 0,
+            people: -2,
+            quality: 'bad',
+            feedback:
+              'That\'s blame wearing a helpful hat — and bad advice besides: the whole point of a lookalike domain is that "double-checking" fails at a glance. She needs the pattern (urgency + secrecy + weird payment), not a chore.',
+          },
+        ],
+      },
+      n6: {
+        text:
+          'Incident notes: lookalike-domain BEC targeting six staff. Credential phish Monday → forwarding rule → tailored gift-card fraud. Contained same day: sessions revoked, rule preserved then removed, domain blocked, zero dollars lost. Leadership briefed; staff awareness note approved.\n\nMike\'s reply: "Glad someone was paying attention. Buy Tanya lunch on the company card."\n\nTicket closed.',
+        end: true,
+      },
+    },
+  },
 ];

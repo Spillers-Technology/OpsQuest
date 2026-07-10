@@ -73,8 +73,8 @@ Bite decks (M1): Networking First Steps (ping/DNS/DHCP/ipconfig), Ticket Craft (
 - Streak: flame + count in home header; updates on app open.
 
 ## Roadmap (agreed with owner)
-- **M0 (tonight)**: playable core, 2 scenarios, streak+XP local. Success = start-to-finish on phone via Expo Go.
-- **M1 (wk 1)**: 5–6 scenarios, 3 bite decks, debrief ranks, daily-first-ticket bonus, "this scenario felt wrong" feedback button. Share with 2–3 teammates.
+- **M0 (tonight)**: playable core, 2 scenarios, streak+XP local. Success = start-to-finish on phone via Expo Go. ✅ shipped as 0.0.1/0.0.2
+- **M1 (wk 1)**: 5–6 scenarios, 3 bite decks, debrief ranks, daily-first-ticket bonus, "this scenario felt wrong" feedback button. Share with 2–3 teammates. — mostly done: 4 scenarios (everything-down, password-loop, printer-dunmore, ceo-email), 3 decks, ranks, daily bonus, feedback mailto button. Remaining: 1–2 more scenarios, teammate share.
 - **M2 (wks 2–3)**: daily quest (1 random ticket + 1 deck), XP tuning, **documented JSON authoring format so the owner writes content without code** (the real unlock), shareable results card, streak-warning push (Expo Notifications).
 - **M3 (wks 4–6)**: Supabase backend — accounts, shared leaderboard, streak sync, weekly challenge ticket, 12–15 scenarios w/ difficulty tiers, choice analytics (doubles as training-gap report).
 - **M4 (mo 2+)**: v1.0 via EAS Build internal distribution (TestFlight/APK), scenario every 2 wks from anonymized real tickets. Stretch: AI dynamic follow-ups / free-text "angry client" mode.

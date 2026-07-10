@@ -1,6 +1,19 @@
 import React from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet, Linking } from 'react-native';
 import { C, mono, S } from '../theme';
+import { DAILY_FIRST_TICKET_XP } from '../storage';
+
+const FEEDBACK_EMAIL = 'help@spillerstech.us';
+
+function sendFeedback(scenario) {
+  const subject = encodeURIComponent(`OpsQuest feedback: ${scenario.ticket} ${scenario.title}`);
+  const body = encodeURIComponent(
+    'What felt wrong about this ticket? (scoring, realism, a choice that made no sense...)\n\n'
+  );
+  Linking.openURL(`mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`).catch(() => {
+    // No mail app configured — nothing sensible to do on-device.
+  });
+}
 
 // Debrief ranks by combined score vs the scenario's best-path max.
 export function rankFor(combined, maxScore) {
@@ -25,7 +38,7 @@ function ScoreBar({ label, value, max, color }) {
   );
 }
 
-export default function DebriefScreen({ scenario, result, xpGain, onReplay, onHome }) {
+export default function DebriefScreen({ scenario, result, xpGain, dailyBonus, onReplay, onHome }) {
   const combined = result.tech + result.people;
   const rank = rankFor(combined, scenario.maxScore);
   // Rough split of the best path so each bar has a sane ceiling
@@ -53,6 +66,11 @@ export default function DebriefScreen({ scenario, result, xpGain, onReplay, onHo
       <View style={styles.xpCard}>
         <Text style={styles.xpText}>+{xpGain} XP</Text>
         <Text style={styles.xpSub}>added to your record</Text>
+        {dailyBonus > 0 && (
+          <Text style={styles.xpBonus}>
+            ☀ includes +{DAILY_FIRST_TICKET_XP} first ticket of the day
+          </Text>
+        )}
       </View>
 
       <Pressable style={styles.replayBtn} onPress={onReplay}>
@@ -60,6 +78,10 @@ export default function DebriefScreen({ scenario, result, xpGain, onReplay, onHo
       </Pressable>
       <Pressable style={styles.homeBtn} onPress={onHome}>
         <Text style={styles.homeText}>BACK TO QUEUE →</Text>
+      </Pressable>
+
+      <Pressable style={styles.feedbackBtn} onPress={() => sendFeedback(scenario)} hitSlop={8}>
+        <Text style={styles.feedbackText}>⚑ this ticket felt wrong? tell us</Text>
       </Pressable>
     </ScrollView>
   );
@@ -115,6 +137,7 @@ const styles = StyleSheet.create({
   },
   xpText: { color: C.green, fontFamily: mono, fontSize: 26, fontWeight: 'bold' },
   xpSub: { color: C.dim, fontFamily: mono, fontSize: 11, marginTop: 2 },
+  xpBonus: { color: C.amber, fontFamily: mono, fontSize: 11, marginTop: 6 },
 
   replayBtn: {
     borderColor: C.line,
@@ -132,4 +155,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   homeText: { color: C.bg, fontFamily: mono, fontSize: 15, fontWeight: 'bold' },
+
+  feedbackBtn: { alignItems: 'center', marginTop: 18 },
+  feedbackText: { color: C.faint, fontFamily: mono, fontSize: 12 },
 });

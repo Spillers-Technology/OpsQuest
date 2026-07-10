@@ -35,6 +35,12 @@ Current scenarios:
 
 - **Everything Is Down**: a P1 clinic outage with patients in the lobby, dead agents, a failed UPS, and a very real communication clock.
 - **The Password Loop**: a repeat lockout call where identity verification, stale mobile credentials, and empathy all matter.
+- **Printer Down at Dunmore & Vance**: a P2 with a 4 PM court deadline, an angry partner, a jammed spooler queue, and a cable the cleaners knocked loose.
+- **The CEO Email**: a P1 gift-card phishing incident — scope the campaign, contain the compromised mailbox, and coach the reporter without shaming her.
+
+Current Skill Bite decks: **Networking First Steps**, **Ticket Craft**, and **Security Basics**.
+
+Recent additions also include a daily first-ticket XP bonus and a "this ticket felt wrong" feedback link on every debrief.
 
 ## Who It Is For
 

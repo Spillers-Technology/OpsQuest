@@ -2,7 +2,13 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, SafeAreaView, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { C } from './src/theme';
-import { getProfile, saveProfile, applyStreak } from './src/storage';
+import {
+  getProfile,
+  saveProfile,
+  applyStreak,
+  todayString,
+  DAILY_FIRST_TICKET_XP,
+} from './src/storage';
 import HomeScreen from './src/screens/HomeScreen';
 import ScenarioScreen from './src/screens/ScenarioScreen';
 import DebriefScreen from './src/screens/DebriefScreen';
@@ -69,18 +75,21 @@ export default function App() {
   const finishScenario = useCallback(
     (scenario, result) => {
       const combined = result.tech + result.people;
-      const xpGain = Math.max(0, combined) * XP_PER_POINT;
+      const today = todayString();
+      const dailyBonus = profile.lastTicketDay === today ? 0 : DAILY_FIRST_TICKET_XP;
+      const xpGain = Math.max(0, combined) * XP_PER_POINT + dailyBonus;
       updateProfile((p) => ({
         ...p,
         xp: p.xp + xpGain,
+        lastTicketDay: today,
         completed: {
           ...p.completed,
           [scenario.id]: Math.max(p.completed[scenario.id] ?? -Infinity, combined),
         },
       }));
-      setScreen({ name: 'debrief', scenario, result, xpGain });
+      setScreen({ name: 'debrief', scenario, result, xpGain, dailyBonus });
     },
-    [updateProfile]
+    [profile, updateProfile]
   );
 
   const finishDeck = useCallback(
@@ -116,6 +125,7 @@ export default function App() {
           scenario={screen.scenario}
           result={screen.result}
           xpGain={screen.xpGain}
+          dailyBonus={screen.dailyBonus}
           onReplay={() =>
             setScreen({ name: 'scenario', scenario: screen.scenario, runId: Date.now() })
           }

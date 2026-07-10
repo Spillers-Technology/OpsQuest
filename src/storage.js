@@ -5,8 +5,9 @@ const KEY = 'opsquest.profile.v1';
 const DEFAULT_PROFILE = {
   xp: 0,
   streak: 0,
-  lastOpen: null, // 'YYYY-MM-DD', local time
-  completed: {},  // scenarioId -> best combined score
+  lastOpen: null,      // 'YYYY-MM-DD', local time
+  lastTicketDay: null, // 'YYYY-MM-DD' of the last finished scenario (daily bonus)
+  completed: {},       // scenarioId -> best combined score
 };
 
 function normalizeProfile(value) {
@@ -17,6 +18,8 @@ function normalizeProfile(value) {
     xp: Number.isFinite(profile.xp) ? profile.xp : DEFAULT_PROFILE.xp,
     streak: Number.isFinite(profile.streak) ? profile.streak : DEFAULT_PROFILE.streak,
     lastOpen: typeof profile.lastOpen === 'string' ? profile.lastOpen : DEFAULT_PROFILE.lastOpen,
+    lastTicketDay:
+      typeof profile.lastTicketDay === 'string' ? profile.lastTicketDay : DEFAULT_PROFILE.lastTicketDay,
     completed:
       profile.completed && typeof profile.completed === 'object' && !Array.isArray(profile.completed)
         ? profile.completed
@@ -46,6 +49,13 @@ function dayString(d) {
   const day = String(d.getDate()).padStart(2, '0');
   return `${d.getFullYear()}-${m}-${day}`;
 }
+
+export function todayString(now = new Date()) {
+  return dayString(now);
+}
+
+// First finished ticket of each local day earns a flat bonus.
+export const DAILY_FIRST_TICKET_XP = 25;
 
 // Same day = no-op, yesterday = +1, anything else = reset to 1.
 export function applyStreak(profile, now = new Date()) {
