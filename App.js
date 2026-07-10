@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, SafeAreaView, StyleSheet } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { C } from './src/theme';
 import { getProfile, saveProfile, applyStreak } from './src/storage';
@@ -11,16 +11,50 @@ import BitesScreen, { XP_PER_CORRECT } from './src/screens/BitesScreen';
 // Debrief converts ticket points to XP.
 const XP_PER_POINT = 5;
 
+class AppErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { error };
+  }
+
+  render() {
+    if (this.state.error) {
+      return <StartupError message={this.state.error.message} />;
+    }
+    return this.props.children;
+  }
+}
+
+function StartupError({ message }) {
+  return (
+    <SafeAreaView style={styles.root}>
+      <View style={styles.errorCard}>
+        <Text style={styles.errorTitle}>OpsQuest hit a startup error.</Text>
+        <Text style={styles.errorText}>{message || 'Restart the app and try again.'}</Text>
+      </View>
+    </SafeAreaView>
+  );
+}
+
 export default function App() {
   const [profile, setProfile] = useState(null);
+  const [bootError, setBootError] = useState(null);
   // { name: 'home' | 'scenario' | 'bites' | 'debrief', scenario?, deck?, result?, xpGain? }
   const [screen, setScreen] = useState({ name: 'home' });
 
   useEffect(() => {
     (async () => {
-      const p = applyStreak(await getProfile());
-      await saveProfile(p);
-      setProfile(p);
+      try {
+        const p = applyStreak(await getProfile());
+        await saveProfile(p);
+        setProfile(p);
+      } catch (e) {
+        setBootError(e);
+      }
     })();
   }, []);
 
@@ -55,6 +89,10 @@ export default function App() {
     },
     [updateProfile]
   );
+
+  if (bootError) {
+    return <StartupError message={bootError.message} />;
+  }
 
   if (!profile) {
     return <View style={styles.root} />;
@@ -108,13 +146,25 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView style={styles.root}>
-      <StatusBar style="light" />
-      {body}
-    </SafeAreaView>
+    <AppErrorBoundary>
+      <SafeAreaView style={styles.root}>
+        <StatusBar style="light" />
+        {body}
+      </SafeAreaView>
+    </AppErrorBoundary>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: C.bg },
+  errorCard: {
+    margin: 16,
+    padding: 16,
+    backgroundColor: C.panel,
+    borderColor: C.red,
+    borderWidth: 1,
+    borderRadius: 14,
+  },
+  errorTitle: { color: C.red, fontSize: 18, fontWeight: 'bold', marginBottom: 8 },
+  errorText: { color: C.text, fontSize: 14, lineHeight: 20 },
 });
