@@ -2,7 +2,7 @@
   "expo": {
     "name": "Ops Quest",
     "slug": "ops-quest",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#0B1220",
@@ -14,7 +14,11 @@
     },
     "android": {
       "package": "com.opsquest.app",
-      "versionCode": 3
-    }
+      "versionCode": 4
+    },
+    "plugins": [
+      "expo-asset",
+      "expo-font"
+    ]
   }
 }
