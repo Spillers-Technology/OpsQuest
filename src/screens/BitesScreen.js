@@ -53,7 +53,7 @@ export default function BitesScreen({ deck, onFinish, onExit }) {
           <Text style={styles.progress}>
             {index + 1}/{deck.questions.length}
           </Text>
-          <Pressable onPress={onExit} hitSlop={8}>
+          <Pressable onPress={onExit} hitSlop={16} style={styles.quitBtn}>
             <Text style={styles.quit}>✕</Text>
           </Pressable>
         </View>
@@ -128,10 +128,11 @@ const styles = StyleSheet.create({
   deckTitle: { color: C.text, fontSize: 15, fontWeight: 'bold', flex: 1 },
   headerRight: { flexDirection: 'row', alignItems: 'center' },
   progress: { color: C.dim, fontFamily: mono, fontSize: 13, marginRight: 14 },
+  quitBtn: { paddingVertical: 6, paddingHorizontal: 8 },
   quit: { color: C.faint, fontFamily: mono, fontSize: 16 },
 
   body: { flex: 1 },
-  bodyContent: { padding: S.pad, paddingBottom: 40 },
+  bodyContent: { padding: S.pad, paddingBottom: 56 },
   qCard: {
     backgroundColor: C.panel,
     borderColor: C.line,

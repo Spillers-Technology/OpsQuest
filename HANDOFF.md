@@ -11,27 +11,29 @@ The entire game is themed as a **ticket queue**:
 - Aesthetic: "NOC dashboard at 2am" — deep navy, status-light colors, monospace ticket IDs
 - No react-navigation; use simple state-based screen switching to keep the dependency tree tiny and the one-shot runnable
 
-## Current state — files already written
+## Current state — all core files built (as of 0.0.5)
 ```
 ops-quest/
-├── package.json          ✅ Expo SDK 53, RN 0.79.5, react 19, AsyncStorage 2.1.2 (minimal deps, intentional)
-├── app.json              ✅ dark UI, navy splash, com.opsquest.app
+├── package.json          ✅ Expo SDK 53, RN 0.79.6, react 19, AsyncStorage 2.1.2
+│                            ⚠ expo-asset/constants/file-system/font/keep-awake MUST stay
+│                            direct dependencies — nested-under-expo deps don't autolink
+│                            natively and the APK crashes on launch (bug in 0.0.1–0.0.3)
+├── app.json              ✅ dark UI, navy splash, com.opsquest.app, expo-asset/font plugins
 ├── babel.config.js       ✅
+├── App.js                ✅ state-based nav, streak on open, daily first-ticket bonus (+25 XP),
+│                            Android status-bar inset at root (RN SafeAreaView is iOS-only!)
 └── src/
-    └── theme.js          ✅ full design tokens (colors, priority map, mono font, radius/pad)
+    ├── theme.js          ✅ design tokens
+    ├── storage.js        ✅ profile/streak/lastTicketDay, levelInfo
+    ├── data/scenarios.js ✅ 4 scenarios: everything-down, password-loop, printer-dunmore, ceo-email
+    ├── data/bites.js     ✅ 3 decks: networking-first-steps, ticket-craft, security-basics
+    └── screens/          ✅ Home, Scenario, Debrief (ranks + feedback mailto), Bites
 ```
 
-## Files still to build (M0 scope — tonight)
-```
-App.js                        # root: load profile, update streak on open, state-based nav (home | scenario | bites | debrief)
-src/storage.js                # AsyncStorage: getProfile/saveProfile; streak logic: same day = no-op, yesterday = +1, else reset to 1
-src/data/scenarios.js         # node-graph format (schema below)
-src/data/bites.js             # quiz decks (schema below)
-src/screens/HomeScreen.js     # streak flame + count, XP/level, ticket queue (scenario cards w/ priority stripe), bites section
-src/screens/ScenarioScreen.js # plays nodes, feedback rendered as "ticket note" after each choice, running Tech/People tally
-src/screens/DebriefScreen.js  # end-of-ticket score, rank title, XP award, replay/back
-src/screens/BitesScreen.js    # 5-question quiz, immediate feedback + explanation, XP
-```
+Build/release: APK built in Docker (`reactnativecommunity/react-native-android`; prebuild +
+gradlew assembleRelease), then **verified on the local headless emulator before publishing**
+(boot AVD, adb install, launch, check pidof + uiautomator dump). Emulator toolchain lives in
+gitignored `.tools/`. Releases via `gh release create` with apk + sha256 + metadata.
 
 ## Data schemas (decided)
 **Scenario** — node graph:
@@ -73,8 +75,8 @@ Bite decks (M1): Networking First Steps (ping/DNS/DHCP/ipconfig), Ticket Craft (
 - Streak: flame + count in home header; updates on app open.
 
 ## Roadmap (agreed with owner)
-- **M0 (tonight)**: playable core, 2 scenarios, streak+XP local. Success = start-to-finish on phone via Expo Go. ✅ shipped as 0.0.1/0.0.2
-- **M1 (wk 1)**: 5–6 scenarios, 3 bite decks, debrief ranks, daily-first-ticket bonus, "this scenario felt wrong" feedback button. Share with 2–3 teammates. — mostly done: 4 scenarios (everything-down, password-loop, printer-dunmore, ceo-email), 3 decks, ranks, daily bonus, feedback mailto button. Remaining: 1–2 more scenarios, teammate share.
+- **M0 (tonight)**: playable core, 2 scenarios, streak+XP local. Success = start-to-finish on phone via Expo Go. ✅ shipped as 0.0.1/0.0.2 (note: those APKs crashed on launch — fixed in 0.0.4)
+- **M1 (wk 1)**: 5–6 scenarios, 3 bite decks, debrief ranks, daily-first-ticket bonus, "this scenario felt wrong" feedback button. Share with 2–3 teammates. — mostly done as of 0.0.5: 4 scenarios (everything-down, password-loop, printer-dunmore, ceo-email), 3 decks, ranks, daily bonus, feedback mailto button; 0.0.5 also fixed status-bar overlap + touch targets. Remaining: 1–2 more scenarios, teammate share.
 - **M2 (wks 2–3)**: daily quest (1 random ticket + 1 deck), XP tuning, **documented JSON authoring format so the owner writes content without code** (the real unlock), shareable results card, streak-warning push (Expo Notifications).
 - **M3 (wks 4–6)**: Supabase backend — accounts, shared leaderboard, streak sync, weekly challenge ticket, 12–15 scenarios w/ difficulty tiers, choice analytics (doubles as training-gap report).
 - **M4 (mo 2+)**: v1.0 via EAS Build internal distribution (TestFlight/APK), scenario every 2 wks from anonymized real tickets. Stretch: AI dynamic follow-ups / free-text "angry client" mode.

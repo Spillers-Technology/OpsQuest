@@ -49,7 +49,7 @@ export default function ScenarioScreen({ scenario, onFinish, onQuit }) {
             <Text style={[styles.tallyLabel, { color: C.violet }]}>PEOPLE</Text>
             <Text style={[styles.tallyValue, { color: C.violet }]}>{people}</Text>
           </View>
-          <Pressable onPress={onQuit} hitSlop={8}>
+          <Pressable onPress={onQuit} hitSlop={16} style={styles.quitBtn}>
             <Text style={styles.quit}>✕ abandon</Text>
           </Pressable>
         </View>
@@ -136,10 +136,11 @@ const styles = StyleSheet.create({
   },
   tallyLabel: { fontFamily: mono, fontSize: 10, marginRight: 6 },
   tallyValue: { fontFamily: mono, fontSize: 16, fontWeight: 'bold' },
-  quit: { color: C.faint, fontFamily: mono, fontSize: 12, marginLeft: 'auto' },
+  quitBtn: { marginLeft: 'auto', paddingVertical: 8, paddingLeft: 8 },
+  quit: { color: C.faint, fontFamily: mono, fontSize: 12 },
 
   body: { flex: 1 },
-  bodyContent: { padding: S.pad, paddingBottom: 40 },
+  bodyContent: { padding: S.pad, paddingBottom: 56 },
   situation: {
     backgroundColor: C.panel,
     borderColor: C.line,
