@@ -1,0 +1,148 @@
+{
+  "id": "retention-request",
+  "schema": 2,
+  "ticket": "TKT-3103",
+  "title": "Request to Reduce Backup Retention",
+  "hardTitle": "can you delete the old backups? bill is nuts",
+  "priority": "P4",
+  "category": "backup",
+  "length": "short",
+  "client": "Rookery Clinical Research",
+  "blurb": "The office manager wants old backups deleted to lower next month's storage bill.",
+  "hardBlurb": "we only ever restore recent stuff. please remove anything older than 30 days before the next invoice",
+  "start": "n1",
+  "nodes": {
+    "n1": {
+      "text": "Nina Bell, office manager at Rookery Clinical Research, opens a routine ticket: storage charges rose 28 percent after a file-server migration.\n\n\"Please delete every backup older than thirty days before next month's invoice. We have never needed anything that old. I approve the bill, so you can treat this as approved.\"",
+      "hint": "Backup deletion is irreversible policy change, not ordinary housekeeping. First identify the governing retention and the authority required to change it.",
+      "choices": [
+        {
+          "label": "Acknowledge the cost concern, pause deletion, and review the signed retention schedule, service agreement, and required approvers with Nina.",
+          "next": "n2",
+          "tech": 2,
+          "people": 2,
+          "quality": "best",
+          "feedback": "Paying an invoice does not automatically grant authority to destroy recovery history. Start with the policy and approval chain, while treating the cost problem as real rather than dismissing it with the word compliance."
+        },
+        {
+          "label": "Explain that backups can never be deleted for compliance reasons and close the request.",
+          "next": "n2",
+          "tech": 0,
+          "people": -2,
+          "quality": "ok",
+          "feedback": "Some backups absolutely can expire under policy. Inventing an eternal-retention rule avoids judgment, ignores the bill, and invites the client to work around you."
+        },
+        {
+          "label": "Delete recovery points older than thirty days because Nina is the billing contact and the request is in writing.",
+          "next": "end_exposed",
+          "tech": -3,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "Written is not the same as authorized. Irreversible deletion can conflict with contractual retention, regulatory duties, insurance terms, or a legal hold — none of which the billing contact can waive by ticket."
+        }
+      ]
+    },
+    "n2": {
+      "text": "The agreement specifies 35 daily, 12 monthly, and 7 annual recovery points. Changes require approval from Rookery's data owner and compliance officer. The documentation also flags an active legal hold for a discontinued trial.\n\nNina sighs. \"Fine. But the invoice still has to come down. What can we actually do?\"",
+      "hint": "Separate protected retention from avoidable storage growth. Cost reduction can target scope, duplication, tiering, and stale workloads without destroying required history.",
+      "choices": [
+        {
+          "label": "Break down storage by workload and recovery tier, then look for decommissioned systems, duplicate jobs, oversized exclusions, compression, or cheaper compliant archive tiers.",
+          "next": "n3",
+          "tech": 3,
+          "people": 1,
+          "quality": "best",
+          "feedback": "Retention is only one cost lever. Usage detail often reveals abandoned jobs or expensive hot storage holding data that policy allows on an archive tier."
+        },
+        {
+          "label": "Ask the compliance officer to approve a thirty-day policy so the original request can proceed.",
+          "next": "n3",
+          "tech": -1,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "Approval is necessary but cannot erase the legal hold or other obligations. Bring decision-makers a scoped proposal with impact, not the client's opening number as a yes-or-no form."
+        },
+        {
+          "label": "Tell Nina the contract controls the bill and there are no alternatives until renewal.",
+          "next": "n3",
+          "tech": -1,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "The retention schedule controls minimum recovery history, not necessarily the storage architecture or stale protected assets. 'Nothing can be done' is rarely true before you inspect consumption."
+        }
+      ]
+    },
+    "n3": {
+      "text": "The usage report finds the migration created a second full backup job for the retired file server. Both old and new jobs have run nightly for six weeks. Annual sets are already on the lowest compliant archive tier; the legal-hold dataset is correctly isolated.\n\nRemoving the duplicate future job saves about 22 percent, but its existing recovery points still follow the approved schedule.",
+      "hint": "Stop unnecessary future growth without silently rewriting retention for existing recovery points.",
+      "choices": [
+        {
+          "label": "Get the data owner's confirmation that the old server is decommissioned, disable its future job, retain existing points to schedule, and present the forecast plus any policy-change option to compliance.",
+          "next": "n4",
+          "tech": 3,
+          "people": 2,
+          "quality": "best",
+          "feedback": "This removes waste without erasing history. Confirmation prevents you from discovering that 'retired' meant 'we still run payroll from it every quarter.'"
+        },
+        {
+          "label": "Disable the duplicate job immediately and delete its existing recovery points because the new server has the same files.",
+          "next": "end_exposed",
+          "tech": -2,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "The workloads may overlap, but historical states, permissions, and legal relevance do not become identical after migration. Stop future waste; preserve existing points until authorized expiry."
+        },
+        {
+          "label": "Leave both jobs running until the next annual contract review.",
+          "next": "n4",
+          "tech": -1,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "It is safe for retention but knowingly continues avoidable spend. A documented job-disable change is available now and does not require rewriting the policy."
+        }
+      ]
+    },
+    "n4": {
+      "text": "The data owner confirms the old server is retired, and compliance approves disabling its future job while existing points age out normally. Nina says, \"That's almost the entire increase. Can you put in writing why we didn't just delete the old stuff?\"",
+      "hint": "Close with the authorization, protected obligations, change made, savings, and review point — the decision record matters as much as the console change.",
+      "choices": [
+        {
+          "label": "Document the request, required retention and legal hold, named approvals, duplicate job shutdown, projected savings, and a dated review of actual billing.",
+          "next": "end_governed",
+          "tech": 2,
+          "people": 2,
+          "quality": "best",
+          "feedback": "A defensible record answers who authorized what and why, while the billing review proves the proposed saving became a real one. Backup governance should survive staff turnover."
+        },
+        {
+          "label": "Write \"duplicate backup removed; no data deleted\" and close the ticket.",
+          "next": "end_governed",
+          "tech": 0,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "True but incomplete. It omits the retention boundary, legal hold, approvals, and expected cost impact — exactly what a later auditor or manager will need."
+        },
+        {
+          "label": "Send Nina the compliance policy and tell her to keep it for future requests.",
+          "next": "end_stiff",
+          "tech": 0,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "A policy attachment is not a decision record, and it makes the client do the translation you were hired to provide. Close the loop in plain language."
+        }
+      ]
+    },
+    "end_governed": {
+      "text": "The duplicate job stops, protected recovery points remain intact, and the next invoice lands within two percent of the forecast. Rookery keeps its legal-hold history and saves roughly the amount Nina originally challenged.\n\nThe ticket closes as a cost-control change with an audit trail, not a deletion favor.",
+      "end": true
+    },
+    "end_stiff": {
+      "text": "The risky deletion is avoided and the duplicate job stops, but the client receives a policy dump instead of a useful closeout. The bill falls; trust improves less.\n\nAt the next review, someone has to reconstruct the approval trail from email because the ticket never told the whole story.",
+      "end": true
+    },
+    "end_exposed": {
+      "text": "Required recovery history is deleted before the data owner and compliance officer approve a change. The storage bill falls briefly; the legal-hold review begins immediately afterward.\n\nThere is no undo button for a retention decision made as housekeeping, and the MSP now has to explain why a billing contact's ticket overrode the signed schedule.",
+      "end": true
+    }
+  }
+}

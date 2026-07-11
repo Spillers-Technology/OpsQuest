@@ -1,0 +1,120 @@
+{
+  "id": "local-admin-request",
+  "schema": 2,
+  "ticket": "TKT-3203",
+  "title": "Temporary Local Administrator Request",
+  "hardTitle": "need admin for literally ONE WEEK",
+  "priority": "P4",
+  "category": "change-mgmt",
+  "length": "short",
+  "client": "Alder Peak Engineering",
+  "blurb": "A power user wants local admin to install engineering software for a week.",
+  "hardBlurb": "Nico knows computers. just make him admin until next friday so he can install the plugins he needs",
+  "start": "n1",
+  "nodes": {
+    "n1": {
+      "text": "Nico, a senior engineer at Alder Peak, asks for local administrator rights \"just for a week.\" He is blocked installing a simulation package and vendor plug-ins between client visits.\n\n\"I cannot open a ticket every time the installer sneezes. My manager knows I need the software.\"",
+      "hint": "The access request is a proposed solution. Identify the recurring work problem before approving its broadest form.",
+      "choices": [
+        {
+          "label": "Ask which installers, how often they update, what error he hits, and whether the need is installation, runtime elevation, or license activation.",
+          "next": "n2_scoped",
+          "tech": 2,
+          "people": 2,
+          "quality": "best",
+          "feedback": "'Make me admin' often hides three smaller problems with safer answers. Scoping the actual task respects Nico's time without granting every process on the laptop the same power."
+        },
+        {
+          "label": "Add Nico to Local Administrators and set yourself a calendar reminder to remove him next Friday.",
+          "next": "n2_broad",
+          "tech": -3,
+          "people": 1,
+          "quality": "bad",
+          "feedback": "A calendar reminder is not a security control, and local admin elevates malware and mistakes too. Temporary broad privilege is still broad privilege."
+        },
+        {
+          "label": "Deny the request with \"policy says no\" and close the ticket.",
+          "next": "n2_scoped",
+          "tech": 1,
+          "people": -2,
+          "quality": "ok",
+          "feedback": "Protecting least privilege is right; refusing to solve the business problem is incomplete. Policy should shape the route, not end the conversation."
+        }
+      ]
+    },
+    "n2_scoped": {
+      "text": "Nico shows you the pattern: the signed core package installs once, two approved plug-ins update weekly, and one legacy license tool demands elevation every launch. He has a client demo Tuesday.",
+      "hint": "Match each need to the narrowest control: packaged install, allowlisting, managed elevation, or one-time support action.",
+      "choices": [
+        {
+          "label": "Offer a one-time core install, package the approved plug-ins, and request managed elevation for the license tool with command and time limits.",
+          "next": "n3",
+          "tech": 3,
+          "people": 2,
+          "quality": "best",
+          "feedback": "This solves the workflow without making Nico—or everything he runs—an administrator. Narrow elevation also produces an audit trail the blanket group membership cannot."
+        },
+        {
+          "label": "Tell Nico to submit a new ticket for every plug-in update forever.",
+          "next": "n3",
+          "tech": 0,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "That preserves control by manufacturing queue friction. Repeated approved work is a candidate for packaging or controlled elevation, not a weekly patience test."
+        }
+      ]
+    },
+    "n2_broad": {
+      "text": "Nico installs the package, then the endpoint tool alerts on an unsigned helper downloaded from the vendor forum. He says it is probably required and asks you to silence the alert so he can finish.",
+      "hint": "The original shortcut has exposed exactly why privilege and software trust decisions need boundaries.",
+      "choices": [
+        {
+          "label": "Remove the temporary admin membership, quarantine the helper, preserve the alert details, and reset the plan with Nico and his manager.",
+          "next": "n3",
+          "tech": 3,
+          "people": 1,
+          "quality": "best",
+          "feedback": "Contain first, then repair the relationship and workflow. The alert does not prove malice, but an unsigned forum helper is not something to wave through under borrowed privilege."
+        },
+        {
+          "label": "Suppress the alert for a week because the access was already approved.",
+          "next": "end_exposed",
+          "tech": -3,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "The request was for business software, not a waiver for every executable it attracts. Approval scope matters most when the work drifts."
+        }
+      ]
+    },
+    "n3": {
+      "text": "The safer plan needs Nico's manager to confirm the business app and the security owner to approve the narrow elevation rule. Nico exhales: \"Please don't turn Tuesday's demo into a committee meeting.\"",
+      "hint": "Approval can be controlled without being slow. Bring the manager a concrete option, owner, and deadline.",
+      "choices": [
+        {
+          "label": "Send Nico's manager a concise risk-and-options note, request same-day approval, and schedule the supported install before the demo.",
+          "next": "end_controlled",
+          "tech": 2,
+          "people": 3,
+          "quality": "best",
+          "feedback": "You loop in the manager at the decision point, not as punishment. A specific recommendation and deadline make governance useful instead of ceremonial."
+        },
+        {
+          "label": "Wait for the regular change meeting next week; exceptions are not your problem.",
+          "next": "end_exposed",
+          "tech": 0,
+          "people": -3,
+          "quality": "bad",
+          "feedback": "A P4 is not an emergency, but Tuesday is a real business deadline. Good change management finds a controlled route through the calendar rather than hiding behind it."
+        }
+      ]
+    },
+    "end_controlled": {
+      "text": "The manager approves the named applications. Nico gets the core package, automatically delivered plug-ins, and audited elevation only for the license tool. Tuesday's demo runs.\n\nHe does not get local admin for a week; he gets a workflow that still works next month. Ticket closed.",
+      "end": true
+    },
+    "end_exposed": {
+      "text": "The shortcut either leaves an untrusted helper running with administrator rights or strands the demo behind avoidable process delay. Security and Nico's manager now have to untangle a decision that should have been scoped at intake.\n\nLeast privilege was not the obstacle. Unbounded or absent judgment was. Ticket escalated.",
+      "end": true
+    }
+  }
+}

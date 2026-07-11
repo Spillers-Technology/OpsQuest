@@ -264,6 +264,18 @@ h1 {
   line-height: 1.68;
 }
 
+.section p a {
+  color: var(--text);
+  font-weight: 800;
+  text-decoration: underline;
+  text-decoration-color: rgba(34, 211, 238, 0.5);
+}
+
+.section code {
+  color: var(--cyan);
+  overflow-wrap: anywhere;
+}
+
 .split {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(320px, 440px);

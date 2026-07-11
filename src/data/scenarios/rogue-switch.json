@@ -1,0 +1,140 @@
+{
+  "id": "rogue-switch",
+  "schema": 2,
+  "ticket": "TKT-3304",
+  "title": "The Office-Store Switch",
+  "hardTitle": "quick one - just need a cable blessed :)",
+  "priority": "P4",
+  "category": "networking",
+  "length": "short",
+  "client": "Fernwood Realty Group",
+  "blurb": "They bought a $20 switch for the intern desk. It's a small ask with a long tail.",
+  "hardBlurb": "we grabbed a little internet splitter from the office store for the new intern desk, can you just turn it on for us? should be easy for you guys lol",
+  "start": "n1",
+  "nodes": {
+    "n1": {
+      "text": "Tuesday, 13:05. Dana, office manager at Fernwood Realty, cheerful as ever:\n\n\"Tiny one for you! We set up a desk for the summer intern but there's only one wall jack in that corner and the printer's using it. SO — we bought a little five-port switch thing from the office store. I can see where it plugs in, I just figured I should ask before I start... connecting things.\"",
+      "hint": "She asked first — that's a gift. Unmanaged desk switches aren't evil, but think about what the network can no longer see or control behind one, and whether the building has a better answer.",
+      "choices": [
+        {
+          "label": "\"Really glad you called first. Give me two minutes to look at what's in that corner — there may be a cleaner option than the office-store special.\"",
+          "next": "n2_looked",
+          "tech": 2,
+          "people": 2,
+          "quality": "best",
+          "feedback": "Praise the ask-first instinct — it's the behavior you want to keep alive. Then actually look: the patch panel, the spare pairs, the switch port map. Half of these 'no free jack' problems have a proper fix that takes less time than explaining why the $20 switch is a bad idea."
+        },
+        {
+          "label": "\"Sure, that'll work fine — plug the printer and the intern's PC into it and you're set.\"",
+          "next": "n2_plugged",
+          "tech": -1,
+          "people": 1,
+          "quality": "bad",
+          "feedback": "It probably WILL pass packets — that's the trap. You just approved an invisible, unmanaged device on a client network: no port security, no visibility, and a loop waiting to happen the first time someone 'tidies' the cables. Easy yes today, mystery outage later."
+        },
+        {
+          "label": "\"Please don't plug anything in — unauthorized network equipment is against policy. We'll open a ticket to assess it.\"",
+          "next": "n2_looked",
+          "tech": 1,
+          "people": -2,
+          "quality": "ok",
+          "feedback": "Technically defensible, tonally expensive. Dana did the right thing by asking and got read a policy statement for it — next time she might just plug it in quietly. Same outcome was available with 'great call checking first, let me find you something better.'"
+        }
+      ]
+    },
+    "n2_looked": {
+      "text": "Two minutes in the documentation and a photo from Dana later: the wall jack in that corner is a dual-port faceplate — the second port was never patched in. The switch in Fernwood's closet has open ports. This is a fifteen-minute fix with a patch cable, done properly, with the intern's PC on its own managed port.\n\nDana: \"So do I still need my little splitter or...?\"",
+      "hint": "The proper fix is cheap and close. The remaining move is what happens to the $20 switch — and whether this becomes a teaching moment or a lecture.",
+      "choices": [
+        {
+          "label": "\"Better than the splitter: that wall plate has a second jack we can light up properly. I'll patch it in remotely with your hands, intern gets a real port, and the little switch can go back for a refund.\"",
+          "next": "n3",
+          "tech": 2,
+          "people": 1,
+          "quality": "best",
+          "feedback": "The proper fix, sold on its merits: faster than it sounds, cleaner than the gadget, and the client saves twenty bucks. The intern's PC lands on a managed port with visibility and port security — which is the part nobody at the client will ever know to appreciate."
+        },
+        {
+          "label": "\"Use the splitter for now — I'll add the real port fix to our someday list.\"",
+          "next": "n3",
+          "tech": -1,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "'For now' is doing heavy lifting: temporary network gear is the most permanent thing in any office. The proper fix is fifteen minutes TODAY — the someday list is where it becomes an archaeology find during some future outage."
+        },
+        {
+          "label": "Have Dana mail the switch to your office so it can't end up deployed somewhere.",
+          "next": "n3",
+          "tech": 0,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "Confiscating the client's own twenty-dollar purchase is a strange flex when 'return it for a refund' exists. Control the network with the patch panel and the port config — not by impounding office supplies."
+        }
+      ]
+    },
+    "n2_plugged": {
+      "text": "Friday, 09:20. Fernwood ticket, P2: \"Internet keeps dying in waves? Everyone's Wi-Fi drops, comes back, drops.\" The switch logs show a port flapping with a broadcast storm behind it.\n\nSomeone tidying the intern's desk cables Thursday evening plugged both ends of a spare cable into the little five-port switch. It's been looping the network in bursts ever since — from a device that appears in no documentation, because it was approved on a phone call.",
+      "hint": "Find it, kill the loop — and notice that the real root cause isn't the person who tidied the cables. What fixes this class of problem, not just this loop?",
+      "choices": [
+        {
+          "label": "Walk Dana to the intern desk by phone, unplug the looped cable and the mystery switch, patch the desk's second wall jack properly — and log the real root cause honestly: an unmanaged device we approved without assessment.",
+          "next": "n3",
+          "tech": 2,
+          "people": 2,
+          "quality": "best",
+          "feedback": "The loop was Thursday's cable; the root cause was Tuesday's phone call. Owning that in the ticket — and replacing the gadget with a managed port plus enabling loop protection on the closet switch — is the difference between fixing an outage and retiring a failure mode."
+        },
+        {
+          "label": "Remove the loop, leave the little switch in place, and ask the office to be more careful with cables around it.",
+          "next": "n3",
+          "tech": -2,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "'Be more careful' is not a network control. The unmanaged switch stays invisible, the next loop is one helpful cable-tidier away, and loop protection on the managed switch — the actual fix — remains unconfigured. You fixed the symptom and re-armed the cause."
+        },
+        {
+          "label": "Remove the loop and the switch, and note the outage cause as \"user plugged in a bad cable.\"",
+          "next": "n3",
+          "tech": 0,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "The remediation is right; the note quietly blames whoever tidied the desk for a failure that started with an approved, undocumented device. Notes that launder the root cause guarantee the desk approves the next gadget the same way."
+        }
+      ]
+    },
+    "n3": {
+      "text": "Wrap-up time. The intern's desk has a proper managed port; the office-store switch is out of the picture. Dana, signing off: \"Honestly I figured the splitter thing was fine — it's just a little box. Is there stuff like that we SHOULD be asking you about?\"\n\nAn office manager, asking to be taught. On a Tuesday.",
+      "hint": "This question is worth more than the ticket. What answer keeps her asking — without turning into a policy lecture?",
+      "choices": [
+        {
+          "label": "\"Great question. Rule of thumb: anything with a network cable or a password, ask us first — takes two minutes and it's never a dumb question. I'll send a one-paragraph version for the office.\"",
+          "next": "end_done",
+          "tech": 1,
+          "people": 3,
+          "quality": "best",
+          "feedback": "A memorable rule, zero condescension, and a follow-up she can forward. Every 'ask first' habit you plant at a client is a future 3 AM ticket that never happens — this thirty-second answer is some of the highest-leverage work an MSP tech does all week."
+        },
+        {
+          "label": "\"I'll email you our acceptable-use and equipment policy PDF — it covers all of this.\"",
+          "next": "end_done",
+          "tech": 0,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "The PDF is fine as a follow-up; as an ANSWER it converts a curious ally into a compliance recipient. Nobody reads the attachment — everybody remembers the rule of thumb. Give the human version first."
+        },
+        {
+          "label": "\"Don't worry about it — anything weird, we'll catch it on our end.\"",
+          "next": "end_done",
+          "tech": -2,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "You won't — Tuesday's invisible switch just proved it. Worse, you told the one office manager who ASKS FIRST that asking is unnecessary. Monitoring catches a lot; it doesn't catch what a culture of checking-in prevents for free."
+        }
+      ]
+    },
+    "end_done": {
+      "text": "Ticket notes: intern desk patched to second wall jack on managed port; office-store switch returned. Loop protection verified on the closet switch. Sent Dana the 'network cable or a password? ask first' note — she forwarded it to the whole office with the subject line 'THE RULE'.\n\nThree weeks later Dana calls before plugging in a smart TV a realtor brought from home. It has a default admin password and a phone-home habit. Worth the call.\n\nTicket closed.",
+      "end": true
+    }
+  }
+}

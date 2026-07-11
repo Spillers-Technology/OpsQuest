@@ -1,4 +1,4 @@
-# OPS QUEST — Handoff Brief for Claude Code
+# OPS QUEST — Handoff Brief
 
 ## What this is
 A choose-your-own-adventure mobile game (React Native / Expo) that trains MSP help desk skills the Duolingo way: bite-sized sessions, streaks, XP, and branching IT scenarios that test **both technical judgment and people skills**. Built by a help desk lead to share hard-won experience with their team and future hires in a playful format.
@@ -35,30 +35,25 @@ gradlew assembleRelease), then **verified on the local headless emulator before 
 (boot AVD, adb install, launch, check pidof + uiautomator dump). Emulator toolchain lives in
 gitignored `.tools/`. Releases via `gh release create` with apk + sha256 + metadata.
 
-## Data schemas (decided)
-**Scenario** — node graph:
-```js
-{
-  id: 'printer-dunmore',
-  title: 'Printer Down at Dunmore & Vance',
-  priority: 'P2',              // P1 | P2 | P3
-  client: 'Dunmore & Vance LLP',
-  start: 'n1',
-  nodes: {
-    n1: {
-      text: 'Situation prose...',
-      choices: [
-        { label: 'What you say/do', next: 'n2',
-          tech: 0, people: 2,          // points, can be negative
-          quality: 'best',             // best | ok | bad → feedback tint green/amber/red
-          feedback: 'Why this matters — the teaching line.' }
-      ]
-    },
-    // end nodes: { text, end: true }
-  }
-}
-```
-**Bite deck**: `{ id, title, questions: [{ q, options: [..], answer: idx, why }] }`
+## Data schemas (schema v2 — see AUTHORING.md, the canonical spec)
+**Scenario** — one JSON file per scenario in `src/data/scenarios/`, registered in
+`src/data/scenarios/index.js`, validated by `npm run validate`. Key fields beyond v1:
+`hardTitle`/`hardBlurb` (Real Tech mode), `category` (10-value enum), `length`
+(short/medium/long), `hint` on every choice node (Assisted mode), optional per-choice
+`hint`. `maxScore` is COMPUTED from the graph (never authored). Branching is required
+for medium/long — the validator rejects pure funnels (legacy files carry `"linear": true`).
+
+**Bite deck**: `{ id, title, questions: [{ q, options: [..], answer: idx, why, hint }] }`
+
+**Difficulty modes**: first-open chooser + settings toggle. Assisted = category chips +
+hints; Real Tech = messy user-submitted titles, no hints.
+
+**Home queue**: seeded daily random 8 (balanced P1–P4, unplayed first), "pull more" refresh.
+
+**Content server** (`server/`, optional): Fastify; Postgres via DATABASE_URL else SQLite.
+Public no-auth reads (`/v1/scenarios`, `/v1/manifest`, `/health`) consumed by the app via
+Settings → server URL (bundled JSON is always the offline floor). Accounts/RBAC/OIDC/SAML
+gate only the editor (`/admin`) and writes. See `server/README.md`.
 
 ## M0 content to write (2 scenarios, ~5–7 nodes, 3 choices each)
 1. **"Everything Is Down"** (P1, clinic) — triage order: one user vs site vs service? Check RMM/monitoring, ISP vs internal, UPS/power question, comms cadence, when to escalate to L2, post-incident notes.

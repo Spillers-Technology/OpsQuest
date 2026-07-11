@@ -1,22 +1,41 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { C, mono, S } from '../theme';
+import {
+  AnimatedBar,
+  CountUp,
+  FadeSlideIn,
+  FlashEdge,
+  PopIn,
+  PressScale,
+  Shake,
+  useTrigger,
+  buzz,
+} from '../ui/fx';
 
 export const XP_PER_CORRECT = 10;
 
-export default function BitesScreen({ deck, onFinish, onExit }) {
+export default function BitesScreen({ deck, difficulty, onFinish, onExit }) {
   const [index, setIndex] = useState(0);
   const [pickedIdx, setPickedIdx] = useState(null); // option index after answering
   const [correct, setCorrect] = useState(0);
   const [done, setDone] = useState(false);
+  const [flash, bumpFlash] = useTrigger();
 
   const question = deck.questions[index];
   const last = index === deck.questions.length - 1;
+  const wasRight = pickedIdx === question.answer;
 
   const pick = (i) => {
     if (pickedIdx !== null) return;
     setPickedIdx(i);
-    if (i === question.answer) setCorrect((c) => c + 1);
+    bumpFlash();
+    if (i === question.answer) {
+      setCorrect((c) => c + 1);
+      buzz(18);
+    } else {
+      buzz([0, 70, 50, 70]);
+    }
   };
 
   const next = () => {
@@ -32,21 +51,38 @@ export default function BitesScreen({ deck, onFinish, onExit }) {
   if (done) {
     return (
       <View style={[styles.root, styles.doneWrap]}>
-        <Text style={styles.doneHeader}>── DECK COMPLETE ──</Text>
-        <Text style={styles.doneScore}>
-          {correct}
-          <Text style={styles.doneMax}> / {deck.questions.length}</Text>
-        </Text>
-        <Text style={styles.doneXp}>+{correct * XP_PER_CORRECT} XP</Text>
-        <Pressable style={styles.exitBtn} onPress={onExit}>
-          <Text style={styles.exitText}>BACK TO QUEUE →</Text>
-        </Pressable>
+        <FadeSlideIn delay={0}>
+          <Text style={styles.doneHeader}>── DECK COMPLETE ──</Text>
+        </FadeSlideIn>
+        <PopIn delay={200} from={0.4}>
+          <Text style={styles.doneScore}>
+            <CountUp value={correct} duration={700} delay={300} style={styles.doneScore} />
+            <Text style={styles.doneMax}> / {deck.questions.length}</Text>
+          </Text>
+        </PopIn>
+        <PopIn delay={1050} from={0.6}>
+          <CountUp
+            value={correct * XP_PER_CORRECT}
+            duration={500}
+            delay={1150}
+            prefix="+"
+            suffix=" XP"
+            style={styles.doneXp}
+          />
+        </PopIn>
+        <FadeSlideIn delay={1500} dy={12}>
+          <PressScale style={styles.exitBtn} onPress={onExit}>
+            <Text style={styles.exitText}>BACK TO QUEUE →</Text>
+          </PressScale>
+        </FadeSlideIn>
       </View>
     );
   }
 
   return (
     <View style={styles.root}>
+      <FlashEdge trigger={flash} color={wasRight ? C.green : C.red} />
+
       <View style={styles.header}>
         <Text style={styles.deckTitle}>⚡ {deck.title}</Text>
         <View style={styles.headerRight}>
@@ -58,11 +94,26 @@ export default function BitesScreen({ deck, onFinish, onExit }) {
           </Pressable>
         </View>
       </View>
+      <AnimatedBar
+        pct={(index + (pickedIdx !== null ? 1 : 0)) / deck.questions.length}
+        color={C.blue}
+        trackColor={C.panelHi}
+        height={3}
+        radius={0}
+      />
 
       <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent}>
-        <View style={styles.qCard}>
-          <Text style={styles.qText}>{question.q}</Text>
-        </View>
+        <FadeSlideIn key={`q-${index}`} dy={18} duration={280}>
+          <View style={styles.qCard}>
+            <Text style={styles.qText}>{question.q}</Text>
+            {difficulty === 'easy' && question.hint && pickedIdx === null && (
+              <Text style={styles.qHint}>
+                <Text style={styles.qHintTag}>⚐ HINT </Text>
+                {question.hint}
+              </Text>
+            )}
+          </View>
+        </FadeSlideIn>
 
         {question.options.map((opt, i) => {
           const answered = pickedIdx !== null;
@@ -79,34 +130,46 @@ export default function BitesScreen({ deck, onFinish, onExit }) {
           } else if (answered) {
             color = C.faint;
           }
-          return (
-            <Pressable
-              key={i}
+          const option = (
+            <PressScale
               style={[styles.option, { borderColor: border }]}
               onPress={() => pick(i)}
               disabled={answered}
             >
               <Text style={[styles.optionText, { color }]}>{opt}</Text>
-            </Pressable>
+            </PressScale>
+          );
+          return (
+            <FadeSlideIn key={`${index}-${i}`} delay={120 + i * 80} dy={14}>
+              {/* Wrong pick rattles; the real answer pops so the eye lands on it */}
+              {answered && isPicked && !isAnswer ? (
+                <Shake trigger={flash}>{option}</Shake>
+              ) : answered && isAnswer ? (
+                <PopIn from={0.96}>{option}</PopIn>
+              ) : (
+                option
+              )}
+            </FadeSlideIn>
           );
         })}
 
         {pickedIdx !== null && (
           <>
-            <View
-              style={[
-                styles.why,
-                { borderLeftColor: pickedIdx === question.answer ? C.green : C.red },
-              ]}
-            >
-              <Text style={styles.whyHeader}>
-                {pickedIdx === question.answer ? '✓ CORRECT' : '✗ NOT QUITE'}
-              </Text>
-              <Text style={styles.whyText}>{question.why}</Text>
-            </View>
-            <Pressable style={styles.nextBtn} onPress={next}>
-              <Text style={styles.nextText}>{last ? 'FINISH →' : 'NEXT →'}</Text>
-            </Pressable>
+            <FadeSlideIn delay={150} dy={10}>
+              <View style={[styles.why, { borderLeftColor: wasRight ? C.green : C.red }]}>
+                <PopIn delay={150} from={0.6}>
+                  <Text style={[styles.whyHeader, { color: wasRight ? C.green : C.red }]}>
+                    {wasRight ? '✓ CORRECT' : '✗ NOT QUITE'}
+                  </Text>
+                </PopIn>
+                <Text style={styles.whyText}>{question.why}</Text>
+              </View>
+            </FadeSlideIn>
+            <FadeSlideIn delay={420} dy={8}>
+              <PressScale style={styles.nextBtn} onPress={next}>
+                <Text style={styles.nextText}>{last ? 'FINISH →' : 'NEXT →'}</Text>
+              </PressScale>
+            </FadeSlideIn>
           </>
         )}
       </ScrollView>
@@ -142,6 +205,8 @@ const styles = StyleSheet.create({
     marginBottom: S.pad,
   },
   qText: { color: C.text, fontSize: 15, lineHeight: 23 },
+  qHint: { color: C.dim, fontSize: 12, lineHeight: 18, marginTop: 10 },
+  qHintTag: { color: C.amber, fontFamily: mono, fontSize: 11, fontWeight: 'bold' },
 
   option: {
     backgroundColor: C.panelHi,
@@ -160,7 +225,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
     marginBottom: S.pad,
   },
-  whyHeader: { color: C.dim, fontFamily: mono, fontSize: 11, marginBottom: 6 },
+  whyHeader: { fontFamily: mono, fontSize: 11, marginBottom: 6 },
   whyText: { color: C.text, fontSize: 14, lineHeight: 21 },
 
   nextBtn: {

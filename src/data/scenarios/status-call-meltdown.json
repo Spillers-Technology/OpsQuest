@@ -1,0 +1,448 @@
+{
+  "id": "status-call-meltdown",
+  "schema": 2,
+  "ticket": "TKT-3105",
+  "title": "Incident Update Cadence Breakdown",
+  "hardTitle": "CALL OWEN NOW - no updates for TWO DAYS",
+  "priority": "P2",
+  "category": "comms",
+  "length": "long",
+  "client": "Kestrel & Loom Home Goods",
+  "blurb": "A simple order-sync incident has lasted three days, and missed updates have the client's owner furious.",
+  "hardBlurb": "owner says stop emailing the generic inbox and call him. connector still broken apparently. he is asking what exactly we do all day",
+  "start": "n1",
+  "nodes": {
+    "n1": {
+      "text": "Wednesday, 08:12. You inherit an incident opened Monday morning: Kestrel & Loom's warehouse orders are not syncing into its shipping portal. The ticket contains six internal notes, two vendor replies, and no client-facing update since Monday at 15:40. Tuesday's promised 10:00 and 15:00 updates were both missed.\n\nOwner Owen Kade is on line one. \"Before you tell me you're looking into it, explain why I had to call you to learn whether my orders shipped.\"",
+      "hint": "The first problem on this call is the broken promise, not the connector. Take ownership without guessing at facts you have not verified.",
+      "choices": [
+        {
+          "label": "\"You should not have had to call. We missed two committed updates, and that is our failure. I am taking ownership now; give me ten minutes to verify the current state, then I will call you at 8:25 with facts and a repair plan.\"",
+          "next": "n2_owned",
+          "tech": 1,
+          "people": 3,
+          "quality": "best",
+          "feedback": "A useful apology names the failure, avoids excuses, and makes a near-term promise you can keep. Do not bury the missed cadence under technical detail the client did not ask for yet."
+        },
+        {
+          "label": "\"I just received the ticket, but I will find out why the assigned technician did not update you.\"",
+          "next": "n2_defensive",
+          "tech": 0,
+          "people": -2,
+          "quality": "ok",
+          "feedback": "It may protect you personally, but Owen hired the MSP, not one technician. Internal assignment history is yours to fix after the client hears ownership and a plan."
+        },
+        {
+          "label": "Explain that the team was waiting on the shipping vendor and had nothing meaningful to report.",
+          "next": "n2_defensive",
+          "tech": -1,
+          "people": -3,
+          "quality": "bad",
+          "feedback": "'Waiting' is meaningful when orders are stalled: say what is pending, who owns it, business impact, workaround, and the next update. Silence did not become acceptable because the vendor was quiet too."
+        }
+      ]
+    },
+    "n2_owned": {
+      "text": "Owen exhales rather than interrupting. \"8:25. Fine. And include Lila at the warehouse — she knows which orders are stuck.\"\n\nYou now have thirteen minutes. The ticket suggests the sync service stopped after Sunday's certificate renewal, but nobody recorded current backlog, workaround, or whether the replacement certificate was actually bound.",
+      "hint": "Build a status from verified service state, business impact, and ownership. Ticket activity is not the same as incident understanding.",
+      "choices": [
+        {
+          "label": "Call Lila for current impact while checking service state, certificate binding, event logs, and queue depth; write a one-screen incident timeline.",
+          "next": "n3",
+          "tech": 3,
+          "people": 2,
+          "quality": "best",
+          "feedback": "The technical truth and the business truth live in different places. Parallel verification lets the promised update answer both 'what is broken?' and 'what is it costing us?'"
+        },
+        {
+          "label": "Read every internal note in chronological order before contacting anyone or touching the system.",
+          "next": "n3_escalated",
+          "tech": 1,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "History matters, but thirteen minutes cannot become an archaeology project. Verify the present state first, then use the timeline to explain how it got there."
+        },
+        {
+          "label": "Restart the sync service immediately so you can call Owen with a fix instead of another status.",
+          "next": "n3_escalated",
+          "tech": -2,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "An undocumented restart can erase evidence, duplicate queued work, or fail for the same certificate reason. The urge to bring good news does not replace verification and rollback thinking."
+        }
+      ]
+    },
+    "n2_defensive": {
+      "text": "Owen cuts in. \"There it is again: somebody else's fault. I want you, your service manager, and Lila on a call at 8:30. If I have to chase one more update, we will discuss the contract instead of the connector.\"\n\nYou have eighteen minutes and an executive escalation your first answer helped create.",
+      "hint": "The audience and stakes expanded. Stop assigning blame, bring verified facts, and recruit the right internal owner before the call.",
+      "choices": [
+        {
+          "label": "Acknowledge the defensiveness, accept the 8:30 call, brief your service manager, and verify technical state and warehouse impact with Lila beforehand.",
+          "next": "n3_escalated",
+          "tech": 2,
+          "people": 3,
+          "quality": "best",
+          "feedback": "You cannot retract the first answer, but you can correct its pattern immediately. Internal leadership should arrive briefed, not discover the incident alongside the angry client."
+        },
+        {
+          "label": "Ask Owen to postpone the call until noon so engineering can finish troubleshooting.",
+          "next": "n3_escalated",
+          "tech": 0,
+          "people": -2,
+          "quality": "ok",
+          "feedback": "More diagnostic time would be convenient, but another delayed conversation repeats the exact service failure under dispute. Attend with knowns, unknowns, and a next checkpoint."
+        },
+        {
+          "label": "Forward the ticket to your service manager and continue technical work off the call.",
+          "next": "n3_escalated",
+          "tech": 0,
+          "people": -3,
+          "quality": "bad",
+          "feedback": "Escalation adds accountable leadership; it does not transfer away the owner Owen is already speaking to. Vanishing after promising ownership confirms his complaint."
+        }
+      ]
+    },
+    "n3": {
+      "text": "At 08:22 you have a clean picture. The Windows sync service is stopped. Its configured TLS thumbprint still points to the certificate that expired Sunday; the renewed certificate is installed but not bound. Event logs show clean certificate failures, and 286 orders are queued in the ERP. Lila confirms staff are manually uploading priority orders, about twelve minutes each, with no known duplicates.\n\nYour 08:25 call is due.",
+      "hint": "A strong update separates confirmed facts, impact, plan, risk, and the next commitment. Do not wait for resolution to communicate.",
+      "choices": [
+        {
+          "label": "Call on time: state the expired binding and 286-order impact, credit Lila's workaround, propose bind-test-drain with duplicate monitoring, and promise updates every 30 minutes even if status is unchanged.",
+          "next": "n4_plan",
+          "tech": 3,
+          "people": 3,
+          "quality": "best",
+          "feedback": "This is an operational update, not a recital of logs. It gives cause, scale, safe repair, continuity, and cadence — the five things leadership needs to make decisions."
+        },
+        {
+          "label": "Send Owen a detailed email with the event-log errors so you can start the certificate change at once.",
+          "next": "n4_plan_escalated",
+          "tech": 1,
+          "people": -2,
+          "quality": "ok",
+          "feedback": "The detail may be accurate, but you promised a call and he explicitly asked to stop relying on generic inbox traffic. Channel and timing are part of the commitment."
+        },
+        {
+          "label": "Wait until the certificate is rebound so the call can announce resolution.",
+          "next": "n4_plan_escalated",
+          "tech": 0,
+          "people": -3,
+          "quality": "bad",
+          "feedback": "This repeats the original failure within minutes of apologizing for it. A status promise is due whether the system cooperates or not."
+        }
+      ]
+    },
+    "n3_escalated": {
+      "text": "By 08:29, you and the service manager have verified the stopped service, expired certificate binding, and a backlog of 286 orders. Lila describes two days of manual uploads. Owen opens the call with, \"I want facts, named owners, and no speeches about process.\" Your service manager turns to you for the incident status.",
+      "hint": "The client has told you the format he needs. Lead with impact and evidence, then name the repair owner and next checkpoint.",
+      "choices": [
+        {
+          "label": "Give the concise facts, own the certificate correction, name the service manager as cadence backup, explain the controlled backlog drain, and set the first 09:00 update.",
+          "next": "n4_plan_escalated",
+          "tech": 3,
+          "people": 3,
+          "quality": "best",
+          "feedback": "Named primary and backup owners close the gap that allowed silence. Matching Owen's requested format shows listening more effectively than a longer apology."
+        },
+        {
+          "label": "Walk through the ticket from Monday so Owen can see how much work the team performed.",
+          "next": "n4_plan_escalated",
+          "tech": 0,
+          "people": -2,
+          "quality": "ok",
+          "feedback": "Activity is not outcome, and Owen explicitly asked for facts and owners. A chronological defense makes him excavate the current status himself."
+        },
+        {
+          "label": "Let the service manager handle Owen while you silently start making the certificate change.",
+          "next": "n4_plan_escalated",
+          "tech": 1,
+          "people": -3,
+          "quality": "bad",
+          "feedback": "Technical urgency does not excuse disappearing from the accountability moment. The change can wait two minutes for a clear handoff and approval."
+        }
+      ]
+    },
+    "n4_plan": {
+      "text": "Owen says, \"That is the first useful update I've had. Do it, but Lila decides how fast those orders release — I don't want 286 duplicate shipments.\" He accepts the 30-minute cadence and asks for phone updates until the backlog is below 50.\n\nYou have a technical change and an explicit communication contract.",
+      "hint": "Honor both parts: record approval and drain controls, then make the primary and backup communication ownership visible.",
+      "choices": [
+        {
+          "label": "Record Owen's approval, Lila's drain authority, cadence/channel/recipients, and your service manager as backup; then prepare the binding change and rollback.",
+          "next": "n5_change",
+          "tech": 3,
+          "people": 2,
+          "quality": "best",
+          "feedback": "A cadence that lives only in your head is one interruption away from failing. The decision record ties technical execution to business control and makes backup ownership real."
+        },
+        {
+          "label": "Start the change immediately and set a personal calendar reminder for 08:55.",
+          "next": "n5_change",
+          "tech": 2,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "The reminder helps, but it does not document approval, audience, or a fallback if you are pulled into the console. Communication needs the same redundancy as a production service."
+        },
+        {
+          "label": "Ask the service manager to own all updates so you can focus completely on the fix.",
+          "next": "n5_change_fragile",
+          "tech": 1,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "A backup communicator is wise; an uninvolved replacement creates translation delay and removes the accountable owner Owen just accepted. Pair, do not disappear."
+        }
+      ]
+    },
+    "n4_plan_escalated": {
+      "text": "Owen approves the change but requires 15-minute phone updates with himself, Lila, the account manager, and your service manager. \"You no longer get thirty minutes. Earn that back.\" Lila retains control of backlog release.\n\nThe same easy certificate fix now carries a crowded bridge and a tighter cadence because earlier communication spent the margin.",
+      "hint": "Acknowledge the increased coordination cost and make the cadence resilient before entering the change.",
+      "choices": [
+        {
+          "label": "Accept the cadence, document roles and approval, assign the service manager to call if you are mid-change, and keep a shared status note everyone can read.",
+          "next": "n5_change_fragile",
+          "tech": 2,
+          "people": 3,
+          "quality": "best",
+          "feedback": "The tighter cadence is a consequence, not a punishment to debate during an outage. Shared notes and an explicit backup keep technical focus from creating another silence."
+        },
+        {
+          "label": "Agree verbally but plan to update only when the service state changes; 15 minutes is operationally excessive.",
+          "next": "n5_change_fragile",
+          "tech": 0,
+          "people": -3,
+          "quality": "bad",
+          "feedback": "You may dislike the cadence, but silently substituting your own breaks another explicit commitment. Renegotiate later with evidence; honor it now."
+        },
+        {
+          "label": "Have the account manager sit on the bridge and relay whatever appears in the ticket.",
+          "next": "n5_change_fragile",
+          "tech": 0,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "That provides presence, but not necessarily accurate status. Give the communicator direct access to your concise knowns, actions, risks, and next checkpoint."
+        }
+      ]
+    },
+    "n5_change": {
+      "text": "08:37. You bind the renewed certificate and start the sync service in paused-drain mode. The service authenticates cleanly. A five-order test batch, excluding Lila's manual list, reaches the shipping portal exactly once. Queue: 281.\n\nAt 08:54, a monitoring alert pulls you into another window. Your 08:55 update is one minute away.",
+      "hint": "A small interrupt is how cadences fail. Use the backup and communicate the verified milestone before investigating unrelated work.",
+      "choices": [
+        {
+          "label": "Send your shared status to the service manager, confirm they make the 08:55 call, and remain available for technical questions while parking the unrelated alert.",
+          "next": "n6_drain",
+          "tech": 2,
+          "people": 3,
+          "quality": "best",
+          "feedback": "This is why you named a backup. A concise handoff preserves cadence without abandoning the repair, and an unrelated alert should enter its own triage path."
+        },
+        {
+          "label": "Investigate the alert quickly and call Owen when you have both items under control.",
+          "next": "n6_drain_fragile",
+          "tech": 0,
+          "people": -3,
+          "quality": "bad",
+          "feedback": "'Quickly' is how the last two promised updates disappeared. The client did not agree that unrelated work could silently override the cadence."
+        },
+        {
+          "label": "Send Owen a one-line text saying the test passed and return to the console.",
+          "next": "n6_drain",
+          "tech": 1,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "On time is good, but the agreed channel was a call and the update should include queue, duplicate controls, and next action. A thin message risks new questions instead of reducing uncertainty."
+        }
+      ]
+    },
+    "n5_change_fragile": {
+      "text": "09:07. The renewed certificate is bound and the service authenticates. The test batch reaches the portal, but two of Lila's manually uploaded orders also appear because the exclusion list was incomplete or late. She catches them before shipment and puts the drain back on pause.\n\nOwen says, \"The fix works, but now my team is guarding it from us. What is the next safe move?\"",
+      "hint": "Do not minimize a caught duplicate. Stabilize, reconcile the authoritative list with the business owner, and keep the tight cadence.",
+      "choices": [
+        {
+          "label": "Acknowledge the duplicate risk, keep the queue paused, reconcile all manual IDs with Lila, remove the two duplicates, retest, and update the bridge at the committed time.",
+          "next": "n6_drain_fragile",
+          "tech": 3,
+          "people": 3,
+          "quality": "best",
+          "feedback": "A caught near-miss is still operational information. Pausing and rebuilding the exclusion list with its owner prevents urgency from turning recovery into duplicate fulfillment."
+        },
+        {
+          "label": "Resume slowly and ask warehouse staff to cancel any duplicates they notice.",
+          "next": "n6_drain_fragile",
+          "tech": -2,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "Detection by warehouse eyesight is not a control for 281 queued orders. Fix the reconciliation source before scaling the flow."
+        },
+        {
+          "label": "Explain that the duplicates were caught, so no harm occurred, and continue the planned drain.",
+          "next": "n6_drain_fragile",
+          "tech": 0,
+          "people": -2,
+          "quality": "ok",
+          "feedback": "The catch prevented shipment, not risk. Minimizing it tells Lila her control work is invisible and Owen that recovery metrics matter more than customer impact."
+        }
+      ]
+    },
+    "n6_drain": {
+      "text": "The 08:55 update lands on time: certificate corrected, five orders validated, no duplicates, 281 queued. Owen approves batches of 50 with Lila monitoring. By 09:25 the queue is at 181 and falling cleanly.\n\nOwen asks, \"Why did this take until Wednesday if the actual fix was one certificate setting?\"",
+      "hint": "Distinguish technical cause from duration cause. The answer should include workflow failure without speculating or sacrificing individuals.",
+      "choices": [
+        {
+          "label": "Explain that the certificate caused the outage, but unclear ownership, vendor waiting, and missed escalation/update triggers extended it; commit to a reviewed timeline rather than blaming one technician.",
+          "next": "n7_recovery",
+          "tech": 2,
+          "people": 3,
+          "quality": "best",
+          "feedback": "Root cause and time-to-recovery cause are often different. Naming the system failures honestly creates prevention work; naming a scapegoat merely creates a quieter ticket next time."
+        },
+        {
+          "label": "Say the shipping vendor's slow response prevented the team from knowing it was a local certificate issue.",
+          "next": "n7_recovery",
+          "tech": -1,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "The local event log held the answer, and vendor silence did not prevent client updates. External blame is especially weak when your own timeline contradicts it."
+        },
+        {
+          "label": "Tell Owen you will answer after the post-incident review so you do not get details wrong.",
+          "next": "n7_recovery",
+          "tech": 1,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "Avoiding speculation is sound, but you can already separate confirmed cause from observed process gaps. Give the known answer now and label what remains under review."
+        }
+      ]
+    },
+    "n6_drain_fragile": {
+      "text": "With Lila controlling releases and the service manager staying on the bridge, test batches pass and the queue falls to 176. No shipments leave twice. Updates arrive every fifteen minutes, but each one includes a roll call and explicit approval because confidence is thin.\n\nOwen asks why a one-setting fix took three days and this many people.",
+      "hint": "The heavy coordination is a visible consequence of lost trust. Answer both the original delay and today's overhead without becoming defensive.",
+      "choices": [
+        {
+          "label": "State that the certificate caused the outage, weak ownership and missed updates extended it, and today's extra controls are the reasonable cost of rebuilding confidence; promise a reviewed timeline and actions.",
+          "next": "n7_recovery",
+          "tech": 2,
+          "people": 3,
+          "quality": "best",
+          "feedback": "This connects behavior to consequence without complaining about the client's safeguards. Trust debt charges interest in extra calls, approvals, and verification."
+        },
+        {
+          "label": "Point out that the current team fixed in an hour what the earlier team could not fix in two days.",
+          "next": "n7_recovery",
+          "tech": 0,
+          "people": -2,
+          "quality": "ok",
+          "feedback": "It may be factually flattering to you, but it fractures MSP ownership and tells Owen quality depends on winning technician roulette."
+        },
+        {
+          "label": "Say the bridge itself is slowing the drain and ask Owen to trust the technicians to finish.",
+          "next": "end_breach",
+          "tech": 0,
+          "people": -3,
+          "quality": "bad",
+          "feedback": "The bridge exists because the technicians repeatedly failed to communicate. Asking for unearned trust while criticizing the client's control makes the relationship problem explicit."
+        }
+      ]
+    },
+    "n7_recovery": {
+      "text": "10:18. Queue: 42. Lila confirms normal portal behavior and releases the remaining orders. Owen agrees phone updates can stop after zero, with a written noon summary and a Friday incident review.\n\nThe immediate danger is fading; this is where teams often relax too early.",
+      "hint": "Finish operational validation and preserve commitments made during the incident before the bridge dissolves.",
+      "choices": [
+        {
+          "label": "Drain to zero, reconcile ERP and portal counts with Lila, monitor a new live order, then send the noon summary with owners and Friday-review agenda.",
+          "next": "n8_review",
+          "tech": 3,
+          "people": 2,
+          "quality": "best",
+          "feedback": "Backlog zero is only one metric. Cross-system counts and a fresh transaction prove recovery, while written owners prevent follow-up promises from becoming the next missing updates."
+        },
+        {
+          "label": "Close the incident when the queue reaches zero and let the account manager schedule Friday.",
+          "next": "n8_review",
+          "tech": 0,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "It closes the technical counter but leaves reconciliation and promised follow-up dispersed. Incident ownership continues through handoff, not merely through the last queued item."
+        },
+        {
+          "label": "Keep the bridge open until Friday so nobody can claim another communication gap.",
+          "next": "n8_review",
+          "tech": -1,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "More communication is not automatically better. Once operational criteria are met, shift to a documented follow-up cadence instead of turning a live bridge into permanent furniture."
+        }
+      ]
+    },
+    "n8_review": {
+      "text": "Friday's review confirms the certificate renewal runbook installed the new certificate but did not validate the application binding. The ticket then bounced between service desk, systems, and vendor queues with no single incident owner. No alert existed for a stopped sync service; update reminders were personal tasks, not shared obligations.\n\nOwen asks what will be different next renewal — and next incident.",
+      "hint": "Corrective actions should address detection, technical validation, ownership, escalation, and communication resilience, each with an owner and date.",
+      "choices": [
+        {
+          "label": "Propose binding validation in the renewal runbook, stopped-service monitoring, one named incident owner, shared cadence timers with backup, and escalation when a checkpoint is missed — each assigned and dated.",
+          "next": "n9_close",
+          "tech": 3,
+          "people": 3,
+          "quality": "best",
+          "feedback": "The actions map directly to both failure chains: a certificate control failed technically, then ownership and cadence controls failed operationally. Owners and dates turn lessons into changes."
+        },
+        {
+          "label": "Recommend refresher training for the technician who missed the updates and a checklist reminder for certificates.",
+          "next": "n9_close",
+          "tech": 0,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "Training may help, but a process that depends on one person remembering everything will fail again under load. Build detection and backup into the system."
+        },
+        {
+          "label": "Promise that a senior technician will personally handle all future Kestrel incidents.",
+          "next": "n9_close",
+          "tech": -1,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "A favored hero is not a scalable control and may not be available at 2 a.m. Improve the operating system, not the client's odds of reaching one person."
+        }
+      ]
+    },
+    "n9_close": {
+      "text": "Thirty days later, the new service monitor has been tested, the renewal runbook requires an application transaction, and shared incident timers page both primary and backup owners. Kestrel's next minor incident receives updates on schedule.\n\nOwen replies to the effectiveness review: \"This is what I expected the first time. I can work with this.\"",
+      "hint": "Close with measured outcomes and continued ownership, without claiming one successful month permanently restores trust.",
+      "choices": [
+        {
+          "label": "Thank him, record the tested controls and cadence result, keep the quarterly review item, and close the corrective-action plan as implemented — not infallible.",
+          "next": "end_rebuilt",
+          "tech": 2,
+          "people": 3,
+          "quality": "best",
+          "feedback": "Trust returns through repeated evidence, not a victory declaration. Keeping a light review acknowledges that controls need maintenance without keeping the incident theatrically open."
+        },
+        {
+          "label": "Reply that the issue is fully resolved and remove Kestrel from the enhanced review list.",
+          "next": "end_rebuilt",
+          "tech": 0,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "The controls are implemented, but one clean month does not prove permanence. A scheduled review is cheap insurance against quiet regression."
+        },
+        {
+          "label": "Ask Owen to confirm in writing that he is satisfied and waives further service concerns from the incident.",
+          "next": "end_fragile",
+          "tech": -1,
+          "people": -3,
+          "quality": "bad",
+          "feedback": "Turning a cautiously positive note into a waiver request treats restored trust as legal inventory to capture. Let the evidence stand."
+        }
+      ]
+    },
+    "end_rebuilt": {
+      "text": "The order sync is stable, every queued order reconciles, and the certificate runbook now validates the application rather than merely the certificate store. More importantly, incident updates have named primary and backup owners with tested shared timers.\n\nKestrel remains a client. Trust is not declared repaired; it is being rebuilt on schedule.",
+      "end": true
+    },
+    "end_fragile": {
+      "text": "The technical incident closes and the corrective controls are implemented, but Kestrel keeps tighter oversight and executive checkpoints. The contract survives with less slack in it.\n\nA one-line certificate binding took minutes to correct. The missed promises added weeks of proof work afterward.",
+      "end": true
+    },
+    "end_breach": {
+      "text": "The sync service eventually returns, but another missed commitment, unauthorized release, incomplete account, or refusal of evidence turns the response into a contract-level escalation. Kestrel begins a provider review.\n\nThe postmortem has an awkward headline: the easy fix worked; the service relationship did not.",
+      "end": true
+    }
+  }
+}

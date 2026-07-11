@@ -16,10 +16,15 @@ import {
   todayString,
   DAILY_FIRST_TICKET_XP,
 } from './src/storage';
+import { ScreenIn } from './src/ui/fx';
+import { SCENARIOS as BUNDLED_SCENARIOS } from './src/data/scenarios';
+import { getCachedRemote, syncRemote, mergeScenarios } from './src/data/remote';
 import HomeScreen from './src/screens/HomeScreen';
 import ScenarioScreen from './src/screens/ScenarioScreen';
 import DebriefScreen from './src/screens/DebriefScreen';
 import BitesScreen, { XP_PER_CORRECT } from './src/screens/BitesScreen';
+import DifficultyScreen from './src/screens/DifficultyScreen';
+import SettingsScreen from './src/screens/SettingsScreen';
 
 // Debrief converts ticket points to XP.
 const XP_PER_POINT = 5;
@@ -56,20 +61,36 @@ function StartupError({ message }) {
 export default function App() {
   const [profile, setProfile] = useState(null);
   const [bootError, setBootError] = useState(null);
-  // { name: 'home' | 'scenario' | 'bites' | 'debrief', scenario?, deck?, result?, xpGain? }
+  const [scenarios, setScenarios] = useState(BUNDLED_SCENARIOS);
+  // { name: 'home' | 'scenario' | 'bites' | 'debrief' | 'settings', scenario?, deck?, result?, xpGain? }
   const [screen, setScreen] = useState({ name: 'home' });
+
+  const refreshContent = useCallback(async () => {
+    const remote = await getCachedRemote();
+    setScenarios(mergeScenarios(BUNDLED_SCENARIOS, remote));
+  }, []);
 
   useEffect(() => {
     (async () => {
       try {
-        const p = applyStreak(await getProfile());
+        let p = applyStreak(await getProfile());
+        // New day: fresh queue seed
+        const today = todayString();
+        if (p.queueDay !== today) p = { ...p, queueDay: today, queueNonce: 0 };
         await saveProfile(p);
         setProfile(p);
+        // Bundled content is the floor; merge in last cache, then re-sync quietly.
+        await refreshContent();
+        if (p.contentUrl) {
+          syncRemote(p.contentUrl).then((res) => {
+            if (res.ok) refreshContent();
+          });
+        }
       } catch (e) {
         setBootError(e);
       }
     })();
-  }, []);
+  }, [refreshContent]);
 
   const updateProfile = useCallback((mutate) => {
     setProfile((prev) => {
@@ -115,14 +136,42 @@ export default function App() {
   }
 
   let body;
+  if (!profile.difficulty) {
+    // First open: choose Assisted vs Real Tech before the queue exists.
+    body = (
+      <DifficultyScreen
+        onPick={(mode) => updateProfile((p) => ({ ...p, difficulty: mode }))}
+      />
+    );
+    return (
+      <AppErrorBoundary>
+        <SafeAreaView style={styles.root}>
+          <StatusBar style="light" />
+          <ScreenIn key="difficulty">{body}</ScreenIn>
+        </SafeAreaView>
+      </AppErrorBoundary>
+    );
+  }
   switch (screen.name) {
     case 'scenario':
       body = (
         <ScenarioScreen
           key={screen.runId}
           scenario={screen.scenario}
+          difficulty={profile.difficulty}
           onFinish={(result) => finishScenario(screen.scenario, result)}
           onQuit={() => setScreen({ name: 'home' })}
+        />
+      );
+      break;
+    case 'settings':
+      body = (
+        <SettingsScreen
+          profile={profile}
+          onSetDifficulty={(mode) => updateProfile((p) => ({ ...p, difficulty: mode }))}
+          onSetContentUrl={(url) => updateProfile((p) => ({ ...p, contentUrl: url }))}
+          onSynced={refreshContent}
+          onBack={() => setScreen({ name: 'home' })}
         />
       );
       break;
@@ -145,6 +194,7 @@ export default function App() {
         <BitesScreen
           key={screen.runId}
           deck={screen.deck}
+          difficulty={profile.difficulty}
           onFinish={finishDeck}
           onExit={() => setScreen({ name: 'home' })}
         />
@@ -154,10 +204,13 @@ export default function App() {
       body = (
         <HomeScreen
           profile={profile}
+          scenarios={scenarios}
           onPlayScenario={(scenario) =>
             setScreen({ name: 'scenario', scenario, runId: Date.now() })
           }
           onPlayDeck={(deck) => setScreen({ name: 'bites', deck, runId: Date.now() })}
+          onRefreshQueue={() => updateProfile((p) => ({ ...p, queueNonce: p.queueNonce + 1 }))}
+          onOpenSettings={() => setScreen({ name: 'settings' })}
         />
       );
   }
@@ -166,7 +219,7 @@ export default function App() {
     <AppErrorBoundary>
       <SafeAreaView style={styles.root}>
         <StatusBar style="light" />
-        {body}
+        <ScreenIn key={`${screen.name}-${screen.runId ?? ''}`}>{body}</ScreenIn>
       </SafeAreaView>
     </AppErrorBoundary>
   );

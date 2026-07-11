@@ -1,0 +1,148 @@
+{
+  "id": "dead-laptop-keynote",
+  "schema": 2,
+  "ticket": "TKT-3101",
+  "title": "Dead Laptop Before Investor Keynote",
+  "hardTitle": "MARA LAPTOP BLACK SCREEN investor thing 40 min",
+  "priority": "P2",
+  "category": "hardware",
+  "length": "short",
+  "client": "Northstar Fieldworks",
+  "blurb": "The sales director's laptop will not POST, and her investor presentation starts in 40 minutes.",
+  "hardBlurb": "mara is in the boardroom and it won't turn on. slides are on there. investors arriving now pls call",
+  "start": "n1",
+  "nodes": {
+    "n1": {
+      "text": "09:20. Mara Vale, Northstar's sales director, answers from the boardroom in a stage whisper.\n\n\"The laptop is dead. Completely dead. Investors are downstairs, I present at ten, and the only current deck is on this machine. Please don't tell me to submit a ticket.\"\n\nRMM shows her laptop last checked in yesterday afternoon.",
+      "hint": "There are two clocks: getting a presentation platform ready and recovering the latest file. Stabilize both before chasing a perfect diagnosis.",
+      "choices": [
+        {
+          "label": "\"You're with the right person, and we have forty minutes. I'm arranging a presentation-ready loaner now while we make two quick checks on this laptop and locate the deck.\"",
+          "next": "n2",
+          "tech": 2,
+          "people": 3,
+          "quality": "best",
+          "feedback": "A parallel plan protects the deadline: a known-good device for the meeting, diagnostics and data recovery on a separate track. Naming the plan also gives a panicking VIP something sturdier than reassurance alone."
+        },
+        {
+          "label": "\"Take a breath. I can probably get it working — hold the power button for thirty seconds.\"",
+          "next": "n2",
+          "tech": 0,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "A flea-power reset is reasonable, but promising the dead device will return makes the deadline depend on one diagnosis. Build the fallback before the first troubleshooting step consumes the clock."
+        },
+        {
+          "label": "Tell Mara hardware cannot be repaired remotely and open an emergency dispatch.",
+          "next": "end_missed",
+          "tech": -2,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "A truck roll may eventually repair the laptop, but it does not put slides on the boardroom screen in forty minutes. Solve the business event first; the chassis can wait its turn."
+        }
+      ]
+    },
+    "n2": {
+      "text": "Facilities puts a spare laptop and the right HDMI adapter in the boardroom. On the failed laptop, the known-good outlet and charger produce no LED, fan, logo, or keyboard flash. A flea-power drain changes nothing.\n\nMara says, \"The deck is called Northstar-Series-C-FINAL-final2. I worked on it at home until midnight. I don't know if OneDrive caught up.\"",
+      "hint": "No POST is now established. Preserve the dead machine and look for the data in places that do not require it to boot.",
+      "choices": [
+        {
+          "label": "Sign Mara into the loaner, check OneDrive version history and her recent email/Teams attachments, and leave the failed laptop powered off for later bench recovery.",
+          "next": "n3",
+          "tech": 3,
+          "people": 1,
+          "quality": "best",
+          "feedback": "Once a machine shows no power with known-good input, repeated button pressing stops being diagnosis. Cloud versions and sent attachments are fast, non-destructive recovery paths; bench work can happen without an audience of investors."
+        },
+        {
+          "label": "Open the laptop in the boardroom and reseat its battery and memory.",
+          "next": "n3_risky",
+          "tech": -1,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "That may be valid bench work later, with ESD controls and time. In a boardroom under a deadline it risks the device, burns the fallback window, and turns an anxious client into your hardware-repair spectator."
+        },
+        {
+          "label": "Ask Mara to rebuild the missing slides on the loaner while you keep trying power resets.",
+          "next": "n3",
+          "tech": -1,
+          "people": -2,
+          "quality": "ok",
+          "feedback": "Rebuilding is a last resort, not the first data-recovery plan. Search synchronized storage and collaboration systems before handing a stressed executive thirty minutes of duplicate work."
+        }
+      ]
+    },
+    "n3": {
+      "text": "OneDrive has an 18:07 copy — usable, but missing last night's new financial slide. In Mara's Sent Items you find a 23:48 PDF she emailed to herself from the web version of PowerPoint. It has every slide, though the speaker notes are absent.\n\n09:48. Mara asks, \"Can I trust this, or am I about to discover another surprise in front of them?\"",
+      "hint": "A recovered file is not presentation-ready until it has been opened, displayed, and checked by its owner.",
+      "choices": [
+        {
+          "label": "Open the PDF on the loaner, test it through the room display, have Mara spot-check the financial slide, and promise a post-meeting update on the laptop and unsynced data.",
+          "next": "end_ready",
+          "tech": 2,
+          "people": 2,
+          "quality": "best",
+          "feedback": "Validation closes the loop: file, device, adapter, display, and owner confirmation. The promised follow-up separates today's continuity win from the unresolved hardware and sync problem."
+        },
+        {
+          "label": "Copy both versions to the desktop and tell Mara to choose whichever looks newer during the presentation.",
+          "next": "end_scramble",
+          "tech": 0,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "You recovered options but left version control to the presenter at showtime. Under pressure, reduce ambiguity before the audience arrives."
+        },
+        {
+          "label": "Declare success once the PDF downloads and close the ticket so Mara can focus.",
+          "next": "end_scramble",
+          "tech": -1,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "Downloaded is not displayed. Adapters, permissions, and damaged files all enjoy revealing themselves after a premature ticket closure."
+        }
+      ]
+    },
+    "n3_risky": {
+      "text": "09:51. The laptop remains dead, two bottom screws are now loose on the boardroom table, and the investors have begun taking seats. Facilities finally arrives with a spare. Mara looks at the pieces and says, very evenly, \"I need something on that screen now.\"",
+      "hint": "Stop the repair attempt. With nine minutes left, choose the fastest known-good artifact and verify the room path.",
+      "choices": [
+        {
+          "label": "Apologize, secure the failed laptop and screws, load the newest available PDF from Sent Items on the spare, and test the display with Mara.",
+          "next": "end_scramble",
+          "tech": 1,
+          "people": 2,
+          "quality": "best",
+          "feedback": "The clean ending is gone, but a direct apology and decisive pivot can still save the meeting. Knowing when to stop an unproductive repair is senior judgment, not surrender."
+        },
+        {
+          "label": "Keep reseating components for five more minutes; the laptop only needs to boot once.",
+          "next": "end_missed",
+          "tech": -3,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "Sunk-cost troubleshooting is especially dangerous against a public deadline. 'Only once' is not a recovery plan when a working loaner is sitting beside you."
+        },
+        {
+          "label": "Hand Mara the spare and email her the 18:07 OneDrive copy without testing it.",
+          "next": "end_scramble",
+          "tech": 0,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "It may get her started, but it knowingly uses the older deck and leaves the room connection untested. Emergency speed still benefits from ninety seconds of verification."
+        }
+      ]
+    },
+    "end_ready": {
+      "text": "09:54. The current PDF is full-screen on the boardroom display, the financial slide checks out, and Mara has six quiet minutes to breathe. She presents on time.\n\nThe failed laptop is tagged for bench diagnostics and data recovery; a OneDrive sync follow-up is logged separately. Mara messages afterward: \"Nobody knew. Exactly how I wanted it.\"",
+      "end": true
+    },
+    "end_scramble": {
+      "text": "The presentation starts, but not gracefully. Mara finds the right deck after a tense version check and advances it from the loaner. The meeting is saved; her confidence in the handoff is not.\n\nThe dead laptop still goes to the bench, now with a note explaining why continuity testing belongs ahead of chassis work.",
+      "end": true
+    },
+    "end_missed": {
+      "text": "Ten o'clock arrives with no tested deck on the screen. Northstar delays the investor session while someone rebuilds a presentation station from scratch.\n\nThe laptop eventually reaches the bench, but the incident review centers on the forty-minute continuity window that was spent trying to repair the wrong outcome.",
+      "end": true
+    }
+  }
+}

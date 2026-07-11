@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet, Linking } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Linking } from 'react-native';
 import { C, mono, S } from '../theme';
 import { DAILY_FIRST_TICKET_XP } from '../storage';
+import { AnimatedBar, CountUp, FadeSlideIn, PopIn, PressScale } from '../ui/fx';
 
 const FEEDBACK_EMAIL = 'help@spillerstech.us';
 
@@ -23,7 +24,7 @@ export function rankFor(combined, maxScore) {
   return { title: 'Review the runbook', color: C.red };
 }
 
-function ScoreBar({ label, value, max, color }) {
+function ScoreBar({ label, value, max, color, delay }) {
   const pct = Math.max(0, Math.min(1, max > 0 ? value / max : 0));
   return (
     <View style={styles.barBlock}>
@@ -31,9 +32,7 @@ function ScoreBar({ label, value, max, color }) {
         <Text style={[styles.barLabel, { color }]}>{label}</Text>
         <Text style={[styles.barValue, { color }]}>{value}</Text>
       </View>
-      <View style={styles.barTrack}>
-        <View style={[styles.barFill, { width: `${pct * 100}%`, backgroundColor: color }]} />
-      </View>
+      <AnimatedBar pct={pct} color={color} trackColor={C.panelHi} height={8} delay={delay} />
     </View>
   );
 }
@@ -46,43 +45,55 @@ export default function DebriefScreen({ scenario, result, xpGain, dailyBonus, on
 
   return (
     <ScrollView style={styles.root} contentContainerStyle={styles.content}>
-      <Text style={styles.header}>── TICKET DEBRIEF ──</Text>
-      <Text style={styles.ticketId}>{scenario.ticket} · {scenario.title}</Text>
+      <FadeSlideIn delay={0}>
+        <Text style={styles.header}>── TICKET DEBRIEF ──</Text>
+        <Text style={styles.ticketId}>{scenario.ticket} · {scenario.title}</Text>
+      </FadeSlideIn>
 
-      <View style={styles.card}>
+      <FadeSlideIn delay={140} style={styles.card}>
         <Text style={styles.combinedLabel}>COMBINED SCORE</Text>
-        <Text style={styles.combined}>
-          {combined}
+        <View style={styles.combinedRow}>
+          <CountUp value={combined} duration={700} delay={260} style={styles.combined} />
           <Text style={styles.combinedMax}> / {scenario.maxScore}</Text>
-        </Text>
-        <Text style={[styles.rank, { color: rank.color }]}>{rank.title}</Text>
-      </View>
+        </View>
+        <PopIn delay={1020} from={0.55}>
+          <Text style={[styles.rank, { color: rank.color }]}>{rank.title}</Text>
+        </PopIn>
+      </FadeSlideIn>
 
-      <View style={styles.card}>
-        <ScoreBar label="TECH" value={result.tech} max={halfMax} color={C.cyan} />
-        <ScoreBar label="PEOPLE" value={result.people} max={halfMax} color={C.violet} />
-      </View>
+      <FadeSlideIn delay={900} style={styles.card}>
+        <ScoreBar label="TECH" value={result.tech} max={halfMax} color={C.cyan} delay={1080} />
+        <ScoreBar label="PEOPLE" value={result.people} max={halfMax} color={C.violet} delay={1230} />
+      </FadeSlideIn>
 
-      <View style={styles.xpCard}>
-        <Text style={styles.xpText}>+{xpGain} XP</Text>
+      <PopIn delay={1480} from={0.7} style={styles.xpCard}>
+        <CountUp value={xpGain} duration={600} delay={1580} style={styles.xpText} prefix="+" suffix=" XP" />
         <Text style={styles.xpSub}>added to your record</Text>
         {dailyBonus > 0 && (
-          <Text style={styles.xpBonus}>
-            ☀ includes +{DAILY_FIRST_TICKET_XP} first ticket of the day
-          </Text>
+          <FadeSlideIn delay={2200} dy={8}>
+            <Text style={styles.xpBonus}>
+              ☀ includes +{DAILY_FIRST_TICKET_XP} first ticket of the day
+            </Text>
+          </FadeSlideIn>
         )}
-      </View>
+      </PopIn>
 
-      <Pressable style={styles.replayBtn} onPress={onReplay}>
-        <Text style={styles.replayText}>REOPEN TICKET ↺</Text>
-      </Pressable>
-      <Pressable style={styles.homeBtn} onPress={onHome}>
-        <Text style={styles.homeText}>BACK TO QUEUE →</Text>
-      </Pressable>
+      <FadeSlideIn delay={2320}>
+        <PressScale style={styles.replayBtn} onPress={onReplay}>
+          <Text style={styles.replayText}>REOPEN TICKET ↺</Text>
+        </PressScale>
+      </FadeSlideIn>
+      <FadeSlideIn delay={2410}>
+        <PressScale style={styles.homeBtn} onPress={onHome}>
+          <Text style={styles.homeText}>BACK TO QUEUE →</Text>
+        </PressScale>
+      </FadeSlideIn>
 
-      <Pressable style={styles.feedbackBtn} onPress={() => sendFeedback(scenario)} hitSlop={8}>
-        <Text style={styles.feedbackText}>⚑ this ticket felt wrong? tell us</Text>
-      </Pressable>
+      <FadeSlideIn delay={2500}>
+        <PressScale style={styles.feedbackBtn} onPress={() => sendFeedback(scenario)} hitSlop={8}>
+          <Text style={styles.feedbackText}>⚑ this ticket felt wrong? tell us</Text>
+        </PressScale>
+      </FadeSlideIn>
     </ScrollView>
   );
 }
@@ -115,6 +126,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   combinedLabel: { color: C.faint, fontFamily: mono, fontSize: 11, marginBottom: 4 },
+  combinedRow: { flexDirection: 'row', alignItems: 'baseline' },
   combined: { color: C.text, fontFamily: mono, fontSize: 44, fontWeight: 'bold' },
   combinedMax: { color: C.faint, fontSize: 20 },
   rank: { fontSize: 16, fontWeight: 'bold', marginTop: 6 },
@@ -123,8 +135,6 @@ const styles = StyleSheet.create({
   barLabelRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
   barLabel: { fontFamily: mono, fontSize: 12, fontWeight: 'bold' },
   barValue: { fontFamily: mono, fontSize: 12, fontWeight: 'bold' },
-  barTrack: { height: 8, backgroundColor: C.panelHi, borderRadius: 4, overflow: 'hidden' },
-  barFill: { height: 8, borderRadius: 4 },
 
   xpCard: {
     backgroundColor: C.panelHi,

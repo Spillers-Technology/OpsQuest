@@ -1,0 +1,418 @@
+{
+  "id": "restore-roulette",
+  "schema": 2,
+  "ticket": "TKT-3302",
+  "title": "File Server Dead — Restore Under Fire",
+  "hardTitle": "SERVER DOWN?? everything says not responding",
+  "priority": "P1",
+  "category": "backup",
+  "length": "long",
+  "client": "Marsh & Keel CPAs",
+  "blurb": "Tax season, dead RAID, and a backup chain nobody has tested. Choose carefully.",
+  "hardBlurb": "none of the drives are there. the S drive. everyones files. its the 14th. of APRIL.",
+  "start": "n1",
+  "nodes": {
+    "n1": {
+      "text": "07:32, April 14th. Pam, office manager at Marsh & Keel CPAs, is calm the way people are calm right before they aren't:\n\n\"The S: drive is gone from every computer. All the client files. We have sixteen returns going out tomorrow. The little server in the closet is making a clicking sound.\"\n\nClicking. From the closet where FILESRV01 lives.",
+      "hint": "Clicking from a server usually means dying disks. Before any heroics: what's the actual state of the hardware, and does anything else run on that box?",
+      "choices": [
+        {
+          "label": "\"Don't power it off or on again — leave it exactly as it is. Two questions: is anything else broken besides the S: drive, and when did it last work?\"",
+          "next": "n2",
+          "tech": 2,
+          "people": 1,
+          "quality": "best",
+          "feedback": "A clicking disk may have a few reads left in it — every power cycle is a coin flip you don't need to take yet. Freeze the scene, scope the impact, timestamp the failure. Thirty seconds, three critical facts."
+        },
+        {
+          "label": "Have Pam power-cycle the server — sometimes they come back.",
+          "next": "n2_cycled",
+          "tech": -2,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "Sometimes they come back. Sometimes the click was one salvageable disk and the reboot finishes it off. A power cycle on clicking hardware is an irreversible action taken before you know what you're gambling with."
+        },
+        {
+          "label": "Tell Pam you'll open a case with the hardware vendor and get back to her with next steps.",
+          "next": "n2",
+          "tech": -1,
+          "people": -2,
+          "quality": "ok",
+          "feedback": "The vendor case may matter eventually — but 'we'll get back to you' is the wrong opening line for sixteen tax returns due tomorrow. Triage first; the client needs to hear motion, not process."
+        }
+      ]
+    },
+    "n2": {
+      "text": "Facts assemble: only FILESRV01 is affected — email and the tax application run elsewhere. Files were fine at close of business yesterday. The RMM shows the server offline since 04:11. Remote console: the RAID controller sees one failed disk... and one more marked 'degraded'. It's a RAID 5. One dead, one dying.\n\nThe S: drive data exists in exactly two places: those wounded disks, and the backups.",
+      "hint": "Before touching the wounded array, you want to know precisely what the backup situation is. Not what the schedule SAYS — what actually ran.",
+      "choices": [
+        {
+          "label": "Open the backup console and check the actual job history — last run, last SUCCESS, and any warnings.",
+          "next": "n3",
+          "tech": 3,
+          "people": 0,
+          "quality": "best",
+          "feedback": "The schedule is a hope; the job history is a fact. Restore decisions get made on evidence: when the last good point was, how big it is, and whether the chain that produced it is trustworthy."
+        },
+        {
+          "label": "Start rebuilding the array onto a spare disk right away — the sooner it starts, the sooner it's healthy.",
+          "next": "n3_rebuild",
+          "tech": -2,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "A RAID 5 rebuild is the most punishing I/O workload you can inflict on a member disk — and one member is already dying. Rebuilds kill marginal disks constantly. Confirm your backups BEFORE you stress the only other copy of the data."
+        },
+        {
+          "label": "Call Pam back with a status update before doing anything technical.",
+          "next": "n3",
+          "tech": 0,
+          "people": 1,
+          "quality": "ok",
+          "feedback": "The instinct to communicate is right and it buys patience — but a two-minute backup check first would let you call with a plan instead of a promise. Update with substance beats update with speed, when the gap is minutes."
+        }
+      ]
+    },
+    "n2_cycled": {
+      "text": "Pam holds the power button. The server goes dark, comes back... and the RAID controller now shows TWO failed disks in the RAID 5. The array is offline. The clicking has stopped, in the way a heartbeat stops.\n\nWhatever was readable on that dying disk twenty minutes ago is gone now. Everything rides on the backups.",
+      "hint": "The array is no longer a source of anything. Every decision from here is a backup decision — start with what actually ran, not what was scheduled.",
+      "choices": [
+        {
+          "label": "Open the backup console: last run, last SUCCESS, any warnings — and be straight with Pam that recovery is now backup-only.",
+          "next": "n3_late",
+          "tech": 2,
+          "people": 1,
+          "quality": "best",
+          "feedback": "The right move, one power-cycle too late. Honesty about the situation matters here: setting expectations now ('we're restoring from backup; here's what that means') beats walking them back later."
+        },
+        {
+          "label": "Try more power cycles — the controller might re-accept the second disk.",
+          "next": "n3_late",
+          "tech": -2,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "Controllers occasionally re-admit a marginal disk, and people occasionally win the lottery. What repeated cycles reliably do is deepen platter damage and turn a professional-recovery MAYBE into a definite no. Step away from the button."
+        },
+        {
+          "label": "Send the dead disks straight out for professional data recovery.",
+          "next": "n3_late",
+          "tech": 0,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "Data recovery is the last resort, and you haven't checked the first resort yet. If the backups are good, that's a five-figure invoice and a week's wait for data you already have. Check the console before the courier."
+        }
+      ]
+    },
+    "n3": {
+      "text": "The backup console. Nightly image backups to the on-site NAS, replicated weekly off-site.\n\nLast job: this morning 02:00 — SUCCESS. Nice. Except… scroll up. Wednesday's job: 'Completed with warnings — 3 files locked'. Tuesday: same. And every job since Wednesday shows the same size, byte-for-byte identical, which healthy incrementals of a busy file server never do.\n\nSomething's been quietly wrong for days, wearing a green checkmark.",
+      "hint": "'SUCCESS' is the backup software's opinion. Byte-identical incrementals for days is a smell. How do you find out if a restore point actually contains yesterday's work — without betting the recovery on it?",
+      "choices": [
+        {
+          "label": "Test-mount last night's restore point and actually look inside — spot-check yesterday's files, check folder timestamps against what Pam says they worked on.",
+          "next": "n4",
+          "tech": 3,
+          "people": 0,
+          "quality": "best",
+          "feedback": "A restore point isn't real until you've looked inside it. A ten-minute test mount answers the only question that matters — 'is yesterday's work in here?' — before you've promised anything or overwritten anything."
+        },
+        {
+          "label": "The last job says SUCCESS — start the full restore from it now, time matters.",
+          "next": "n4_blind",
+          "tech": -2,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "You noticed the identical job sizes and restored anyway. Trusting a suspicious green checkmark with your only recovery path is exactly how 'we have backups' becomes 'we HAD backups.' Verify first — the hour you save could be the week you lose."
+        },
+        {
+          "label": "Skip local entirely and restore from the last off-site replica — it's a week old but it's on separate infrastructure.",
+          "next": "n4_offsite",
+          "tech": 0,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "Cautious, but it surrenders up to a week of tax-season work without first checking whether the local chain is fine. Off-site is the fallback, not the opener — verify local before you write off five days of returns."
+        }
+      ]
+    },
+    "n3_late": {
+      "text": "The backup console — now the whole ballgame. Nightly images to the on-site NAS, weekly off-site replica.\n\nLast job: 02:00 today, SUCCESS. But Wednesday onward, every job shows 'completed with warnings' and suspiciously identical sizes. A green checkmark that's been lying for days, maybe.",
+      "hint": "This is your only copy of the data now. You cannot afford to learn mid-restore that the chain is bad — how do you check a restore point's contents cheaply, first?",
+      "choices": [
+        {
+          "label": "Test-mount last night's restore point and inspect it — yesterday's files, sane timestamps — before committing to anything.",
+          "next": "n4",
+          "tech": 3,
+          "people": 0,
+          "quality": "best",
+          "feedback": "With the array dead, the verification step stops being best practice and becomes survival. Ten minutes of looking inside the restore point decides the entire recovery strategy — and you get to make promises you can keep."
+        },
+        {
+          "label": "Full restore from the latest point, immediately — there's no time for tests.",
+          "next": "n4_blind",
+          "tech": -2,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "'No time for tests' is how two-hour problems become two-day problems. If that chain is broken you'll find out at 60% — after burning hours you could have spent restoring from the last GOOD point."
+        },
+        {
+          "label": "Restore the week-old off-site replica while you figure out the local chain.",
+          "next": "n4_offsite",
+          "tech": 0,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "Defensible — but it may cost a week of April tax work that the local chain, one test-mount away, might have saved. Check before you concede the week."
+        }
+      ]
+    },
+    "n3_rebuild": {
+      "text": "Forty minutes into the rebuild, the degraded disk gives up under the load. The array drops offline mid-rebuild. Two failed disks in a RAID 5: the volume is gone.\n\nThe clicking has stopped. So has everything else. It's backups or nothing now — and you haven't looked at the backup console yet.",
+      "hint": "The gamble failed; don't compound it. Everything now depends on verifying — not assuming — what the backups contain.",
+      "choices": [
+        {
+          "label": "Backup console, then test-mount the latest restore point and verify contents before promising anything to anyone.",
+          "next": "n4",
+          "tech": 2,
+          "people": 0,
+          "quality": "best",
+          "feedback": "The rebuild call was wrong; this one is right. When you're down to one copy of the truth, you verify it before you build a recovery plan on top of it — and before you tell the client how today ends."
+        },
+        {
+          "label": "Start restoring the latest backup immediately — enough time has been lost.",
+          "next": "n4_blind",
+          "tech": -1,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "Losing time on the rebuild doesn't make an unverified restore faster — it makes verification MORE important, because there's no array left to fall back on if the chain turns out broken at 60%."
+        },
+        {
+          "label": "Call Pam and explain the rebuild failed before continuing.",
+          "next": "n4",
+          "tech": 0,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "Transparency is good, but 'the thing I tried made it worse and I don't yet know if backups work' is a call that benefits enormously from five more minutes of facts. Verify the restore point, THEN call with a plan attached to the bad news."
+        }
+      ]
+    },
+    "n4": {
+      "text": "Test mount of last night's point: the S: volume mounts… and the freshest file in the client folders is dated WEDNESDAY 11:47 PM. The 'successful' jobs since have been backing up a stale snapshot — locked VSS writer, the classic. Thursday and Friday's work isn't in any backup.\n\nWednesday night's point verifies clean and complete. So: a guaranteed restore to Wednesday, versus two days of tax-season work that exists only on two dead-ish disks.",
+      "hint": "You have a good-but-stale restore point and a wounded array that MIGHT hold two more days. What sequencing gets the office working soonest without destroying the chance of getting Thursday/Friday back?",
+      "choices": [
+        {
+          "label": "Restore Wednesday's point to the spare VM host now — active tax folders first so staff work while the rest copies — and pull the array's disks untouched for a professional recovery attempt at Thursday/Friday's delta. Then call Pam with the full picture.",
+          "next": "n5",
+          "tech": 3,
+          "people": 2,
+          "quality": "best",
+          "feedback": "Everything at once, nothing at risk: verified data flows to alternate hardware (never back onto the sick array), the most-needed folders come first, and the only copies of Thursday/Friday go to a cleanroom instead of a rebuild gamble. That's a recovery PLAN, not a recovery hope."
+        },
+        {
+          "label": "Restore Wednesday's point over the original server's array after swapping in the spare disk.",
+          "next": "n5_overwrite",
+          "tech": -3,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "You'd be writing your only verified copy onto the exact hardware that just proved it eats data — and destroying the only physical source of Thursday and Friday in the process. Restore to hardware you trust; never overwrite a source you might still need."
+        },
+        {
+          "label": "Hold the restore and try to coax the degraded array back online first — two days of work is worth a shot.",
+          "next": "n5_gamble",
+          "tech": -1,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "Thursday/Friday matter, but this inverts the priorities: the entire office stays down while you gamble with the disks. Restore the sure thing first — the delta recovery can run in parallel, professionally, without holding sixteen returns hostage."
+        }
+      ]
+    },
+    "n4_blind": {
+      "text": "The restore runs. At 58%, it dies: 'Backup chain integrity error — incremental references missing blocks.' The post-Wednesday jobs were hollow — a locked VSS writer had them imaging a stale snapshot.\n\nTwo hours gone. The office is still down, Pam has called twice, and you're back at the console choosing a restore point — this time with evidence.",
+      "hint": "The chain broke somewhere after Wednesday. Same discipline as always, just later: verify a point BEFORE the next restore attempt.",
+      "choices": [
+        {
+          "label": "Test-mount Wednesday's point, verify contents, restore it to the spare VM host — critical tax folders first — and give Pam an honest revised timeline.",
+          "next": "n5_late",
+          "tech": 2,
+          "people": 1,
+          "quality": "best",
+          "feedback": "The lesson, applied: verify, restore to trusted hardware, sequence by business need, and reset expectations honestly. Two hours late is recoverable. The same mistake twice wouldn't be."
+        },
+        {
+          "label": "Try restoring Thursday's point instead — maybe only Friday's is bad.",
+          "next": "n5_gamble",
+          "tech": -2,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "The error told you the chain's integrity is gone after Wednesday — trying successive broken points one multi-hour failure at a time is brute-forcing with the client's day. Verify with a test mount; stop restoring on faith."
+        },
+        {
+          "label": "Switch to the week-old off-site replica — at least that chain is separate.",
+          "next": "n4_offsite",
+          "tech": 0,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "Separate chain, real logic — but you'd surrender Thursday-through-LAST-Wednesday without first test-mounting the local Wednesday point, which is probably fine and five days fresher. Verify cheap before you pay expensive."
+        }
+      ]
+    },
+    "n4_offsite": {
+      "text": "Before committing to the week-old replica, one sanity check seems wise — and the test mount of the LOCAL Wednesday point comes back clean: full S: volume, timestamps through Wednesday 11:47 PM. Five days fresher than off-site.\n\nThe post-Wednesday incrementals were hollow (locked VSS writer, stale snapshot). Wednesday local is the best surviving point.",
+      "hint": "Verified point in hand. Now it's sequencing: where to restore, what first, and what happens to the disks that hold the only copy of Thursday/Friday.",
+      "choices": [
+        {
+          "label": "Restore Wednesday local to the spare VM host, tax folders first; send the original disks for professional recovery of Thursday/Friday; brief Pam on exactly what's coming back and when.",
+          "next": "n5",
+          "tech": 2,
+          "people": 2,
+          "quality": "best",
+          "feedback": "Verified source, trusted target, business-first ordering, and the wounded disks preserved for the delta. The off-site instinct wasn't wrong — it just wasn't first. Verification is what promotes a backup from 'probably' to 'plan.'"
+        },
+        {
+          "label": "Still go with the off-site replica — the local NAS was part of a failing system and you don't trust it.",
+          "next": "n5_gamble",
+          "tech": -1,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "You verified the local point is GOOD — that's what the test mount was for. Discarding five days of a CPA firm's April work to honor a feeling, over evidence, is the expensive kind of caution."
+        },
+        {
+          "label": "Restore both — off-site replica now, local Wednesday point as a second copy when it finishes.",
+          "next": "n5_late",
+          "tech": 0,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "Belt and suspenders, but the belt is a week old and goes on first — staff would start the day working from stale files, then reconcile AGAIN when the fresher restore lands. Restore the best verified point once; keep the replica as the fallback it is."
+        }
+      ]
+    },
+    "n5": {
+      "text": "By 11:40 the spare host is serving S: with data through Wednesday night; the active-returns folders landed first and staff were reconciling by 10:15. The dead server's disks are boxed for the recovery lab, chain-of-custody noted.\n\nPam, steadier now: \"Okay. What do I tell the partners about Thursday and Friday's work — and how do we make sure this never happens again?\"",
+      "hint": "Two honest answers owed: a no-promises timeline on the delta, and a root-cause story that includes why 'SUCCESS' lied for four days. What does the close look like?",
+      "choices": [
+        {
+          "label": "Straight talk: recovery lab odds and timeline for Thu/Fri, staff re-key from source docs in parallel; then the writeup — failed disks, hollow backups, VSS root cause — plus follow-ups: restore-verification monitoring, backup alerting on identical-size jobs, hardware refresh quote.",
+          "next": "end_clean",
+          "tech": 2,
+          "people": 3,
+          "quality": "best",
+          "feedback": "The full close: honest odds instead of comfort, a parallel path so the deadline survives either answer, and the systemic fixes — because the real incident wasn't the dead disks, it was four days of backups nobody would have caught without a disaster. Verified-restore monitoring is the change that matters."
+        },
+        {
+          "label": "\"Thursday and Friday are probably recoverable — the lab is very good. I'd plan on getting it back.\"",
+          "next": "end_messy",
+          "tech": 0,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "You just turned a lab's coin-flip into the partners' plan. If the platters are toast, they find out at the deadline that they should have started re-keying today. Hope is not a recovery strategy, and it's definitely not a client communication."
+        },
+        {
+          "label": "Give the honest odds on Thu/Fri and close out once the restore finishes — the root-cause writeup can happen when things calm down.",
+          "next": "end_messy",
+          "tech": 1,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "The client-facing half is right. But 'when things calm down' is where root causes go to be forgotten — and this one (backups lying for four days) WILL recur somewhere else in your client base until the monitoring gap is closed. Write it down while it hurts."
+        }
+      ]
+    },
+    "n5_late": {
+      "text": "The verified restore lands by early afternoon — tax folders first, staff reconciling by 13:30. Slower day than it could have been, but the office is working. The original disks are boxed for the recovery lab.\n\nPam: \"The partners want to know two things. Thursday-Friday's work — and why the backups didn't catch this.\"",
+      "hint": "Same two answers as any recovery close: honest odds on the delta, and the uncomfortable truth about the green checkmarks.",
+      "choices": [
+        {
+          "label": "Honest odds and a parallel re-key plan for Thu/Fri; a straight writeup on the hollow backups (VSS lock, identical-size jobs unnoticed) with restore-verification monitoring as the fix.",
+          "next": "end_clean",
+          "tech": 2,
+          "people": 2,
+          "quality": "best",
+          "feedback": "Ownership plus prevention. The detour cost hours, but the close covers what clients actually judge: whether they can plan around your answers, and whether the failure mode is now extinct."
+        },
+        {
+          "label": "Downplay the detour — the restore worked, focus the writeup on the hardware failure.",
+          "next": "end_messy",
+          "tech": -1,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "A writeup that omits the four days of hollow backups leaves the deadliest failure mode alive and undocumented. Incident reports aren't marketing — the uncomfortable paragraph is the valuable one."
+        },
+        {
+          "label": "Cover the backup root cause in the writeup; skip the Thu/Fri odds conversation until the lab reports back.",
+          "next": "end_messy",
+          "tech": 1,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "The partners have a filing deadline — 'wait for the lab' costs them the days they'd use to re-key. Deliver the odds now, with the caveat, so they can hedge. Uncertain news early beats certain news late."
+        }
+      ]
+    },
+    "n5_overwrite": {
+      "text": "The restore to the original array crawls, stutters — and the spare disk you swapped in starts throwing write errors an hour in. The controller was the problem all along, and now it's chewing on your only verified copy's target while the source disks for Thursday/Friday sit in a server that keeps getting power-cycled.\n\nL2 takes over, moves the restore to the spare VM host — where it should have gone — and quietly pockets the original disks before anything else can happen to them.",
+      "hint": "This one's mostly out of your hands now. What's left is how honestly the close gets written.",
+      "choices": [
+        {
+          "label": "Write the incident up straight — including the restore-target mistake — and the systemic fixes: verified-restore monitoring, and never restoring onto unverified hardware.",
+          "next": "end_burned",
+          "tech": 1,
+          "people": 1,
+          "quality": "best",
+          "feedback": "The mistake is already made; the only version of you that comes out of this stronger is the one whose writeup teaches the next tech. Owning it in writing is also, not incidentally, what keeps L2 in your corner."
+        },
+        {
+          "label": "Write it up focused on the hardware and backup failures — the restore-target choice doesn't need a paragraph.",
+          "next": "end_burned",
+          "tech": -1,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "L2 was there. The account manager will read both versions of events — the one in the ticket and the one in the hallway — and the gap between them costs more than the mistake did."
+        },
+        {
+          "label": "Let L2 write the report since they finished the recovery.",
+          "next": "end_burned",
+          "tech": 0,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "They'll write it, and it'll be fair — but the tech who owns their own incident in writing is the one who gets trusted with the next P1. Passing the pen reads as passing the buck, even when it isn't."
+        }
+      ]
+    },
+    "n5_gamble": {
+      "text": "An hour of coaxing, forcing, and one more power cycle later, the degraded array is not more alive. The office is on hour four of downtime; Pam's calls have acquired a partner on the line. The disks — what's left of them — finally head to the spare-host restore you could have started at nine.\n\nBy the time S: is serving files, it's mid-afternoon, and the recovery lab's odds on those disks have gotten strictly worse.",
+      "hint": "The gamble cost hours and probably shortened the delta's odds. What's left is an honest close.",
+      "choices": [
+        {
+          "label": "Restore done, now level with Pam: today's timeline, the reduced odds on Thu/Fri, a re-key plan — and a writeup that doesn't hide the detour.",
+          "next": "end_messy",
+          "tech": 1,
+          "people": 1,
+          "quality": "best",
+          "feedback": "Late honesty still beats polished spin. The 'restore the sure thing first, gamble in parallel' lesson goes in the writeup — that sequencing error is the whole story of today."
+        },
+        {
+          "label": "Present the afternoon restore as the plan working — no need to relitigate the morning.",
+          "next": "end_burned",
+          "tech": -1,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "Pam lived the morning. Reframing four hours of downtime as success insults the person who spent it apologizing to partners — and guarantees the sequencing lesson is never learned by anyone."
+        },
+        {
+          "label": "Close with solid technical notes; let the account manager handle the relationship conversation.",
+          "next": "end_messy",
+          "tech": 1,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "The notes matter and the AM will help — but the tech who was IN it saying 'here's what I'd do differently' repairs more trust than any account-management smoothing. That conversation is yours to start."
+        }
+      ]
+    },
+    "end_clean": {
+      "text": "Incident report: RAID 5 double-fault on FILESRV01 (one failed disk, one failing; controller suspect). Backups post-Wednesday were hollow — locked VSS writer imaging a stale snapshot behind four days of green checkmarks. Wednesday's point verified via test mount, restored to spare VM host, priority folders first; office working by mid-morning. Original disks to recovery lab for the Thu/Fri delta; staff re-keying in parallel from source documents.\n\nFollow-ups logged: automated restore-verification, alerting on identical-size incrementals, decommission FILESRV01, hardware refresh quote to the account manager.\n\nThe lab, three days later: full delta recovered. Pam's note: \"The returns went out on time. All of them.\"\n\nTicket closed.",
+      "end": true
+    },
+    "end_messy": {
+      "text": "The office got its files back and the returns mostly went out. The parts that hurt — the four days of lying green checkmarks, the hours lost to detours, the delta odds that got worse instead of better — end up half-told, in tickets and hallways, instead of fixed in monitoring.\n\nSix weeks later, at a different client, a backup job completes with warnings. Identical size to yesterday's. Nobody notices.\n\nTicket closed. The pattern isn't.",
+      "end": true
+    },
+    "end_burned": {
+      "text": "The files came back — later than they had to, at more risk than they had to, with L2 driving the last mile and the account manager doing a lot of nodding on a long call with the partners.\n\nMarsh & Keel stays a client. The quarterly business review has a new standing agenda item with your incident number on it. The recovery lab bills five figures for the delta attempt; the partners pay it, and remember it.\n\nTicket closed. Slowly.",
+      "end": true
+    }
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "id": "scan-to-email-broken",
+  "schema": 2,
+  "ticket": "TKT-3202",
+  "title": "MFP Scan-to-Email Stopped Working",
+  "hardTitle": "printer broken but only for scans???",
+  "priority": "P2",
+  "category": "printers",
+  "length": "short",
+  "client": "Bellwether Title Group",
+  "blurb": "The MFP prints normally, but every scan-to-email job fails.",
+  "hardBlurb": "it printed my closing packet fine. scanning says send failed. nobody changed anything",
+  "start": "n1",
+  "nodes": {
+    "n1": {
+      "text": "At 09:06, Priya at Bellwether Title Group reports that the lobby MFP prints from every workstation but scan-to-email has failed since opening. The panel says only \"Send failed.\"\n\n\"Nobody changed anything. We have closing documents stacked up.\"",
+      "hint": "Printing and scan-to-email share a chassis, not a transport path. Trace the function that is actually failing.",
+      "choices": [
+        {
+          "label": "Confirm printing is healthy, test scan-to-email yourself, record the timestamp and error, and check the MFP's SMTP configuration and logs.",
+          "next": "n2_smtp",
+          "tech": 3,
+          "people": 1,
+          "quality": "best",
+          "feedback": "A printer can receive jobs over the LAN while its scanner cannot authenticate to a mail relay. A timestamped reproduction gives you a trail instead of a vague appliance message."
+        },
+        {
+          "label": "Restart the Windows print spooler on the file server.",
+          "next": "n2_detour",
+          "tech": -2,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "The spooler handles print jobs, which are working. Scan-to-email is an outbound SMTP transaction; same plastic box, different road."
+        },
+        {
+          "label": "Power-cycle the MFP immediately because nobody changed anything.",
+          "next": "n2_detour",
+          "tech": -1,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "A reboot may clear a transient fault, but it also erases useful state and interrupts working printing. Verify and capture evidence before reaching for the universal appliance ritual."
+        }
+      ]
+    },
+    "n2_smtp": {
+      "text": "The MFP log shows an SMTP authentication failure beginning at 06:02. Its connector still uses a service account with basic authentication. The tenant audit log shows a mail-policy change deployed overnight.",
+      "hint": "Correlate the first failure with an approved change before altering a working tenant-wide policy.",
+      "choices": [
+        {
+          "label": "Verify the overnight change with the messaging team and move the MFP to the client's approved authenticated relay method.",
+          "next": "n3",
+          "tech": 3,
+          "people": 1,
+          "quality": "best",
+          "feedback": "The timestamps settle what 'nobody changed anything' really means: nobody in the office touched the MFP, but its dependency changed. Fix the obsolete path without weakening the tenant."
+        },
+        {
+          "label": "Re-enable basic authentication tenant-wide so the scanner works like it did yesterday.",
+          "next": "end_risky",
+          "tech": -3,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "Rolling back a security control for one legacy device expands risk far beyond the copier. Use the approved relay design or escalate the device limitation."
+        }
+      ]
+    },
+    "n2_detour": {
+      "text": "Ten minutes later, printing still works and scanning still fails. Priya asks, \"Are we troubleshooting the scanner or the thing that was already fine?\" A fresh test finally exposes an SMTP authentication error.",
+      "hint": "Acknowledge the detour, reset expectations, and follow the evidence now in front of you.",
+      "choices": [
+        {
+          "label": "Own the wrong turn, give Priya a five-minute update cadence, and correlate the SMTP error with overnight mail changes.",
+          "next": "n3",
+          "tech": 2,
+          "people": 2,
+          "quality": "best",
+          "feedback": "A concise correction restores confidence and gets the diagnosis back onto the failing path. Clients forgive a detour faster than a technician pretending it never happened."
+        },
+        {
+          "label": "Factory-reset the MFP to clear whatever changed.",
+          "next": "end_risky",
+          "tech": -3,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "A factory reset destroys address books and network settings while leaving the deprecated authentication method unresolved. That turns one failed feature into an office-wide device rebuild."
+        }
+      ]
+    },
+    "n3": {
+      "text": "A test scan now arrives through the approved relay. Priya has twelve closing packets waiting and asks whether she can tell the office it is fixed.",
+      "hint": "One successful test proves possibility. A useful close proves normal operation and records the dependency that changed.",
+      "choices": [
+        {
+          "label": "Run a scan from Priya's normal workflow, confirm delivery and reply-to behavior, then document the mail-policy dependency and notify the office.",
+          "next": "end_clean",
+          "tech": 2,
+          "people": 2,
+          "quality": "best",
+          "feedback": "End-to-end validation catches cases where the relay accepts mail but the recipient or reply path is wrong. The change note saves the next technician from rediscovering two protocols in one trench coat."
+        },
+        {
+          "label": "The test arrived; close the ticket without mentioning the overnight change.",
+          "next": "end_risky",
+          "tech": 0,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "The feature works, but an undocumented dependency change is tomorrow's mystery outage. Close the technical loop and the communication loop."
+        }
+      ]
+    },
+    "end_clean": {
+      "text": "Priya's backlog starts moving. Your ticket includes failure timestamps, the mail-policy change, the approved relay configuration, and a successful user test.\n\nThe MFP never stopped printing. Now the notes make clear why that fact mattered. Ticket closed.",
+      "end": true
+    },
+    "end_risky": {
+      "text": "Scanning is either still down or restored by weakening or erasing something larger than the original fault. The messaging lead and service manager join what should have been a contained relay change.\n\nThe copier was one box; the blast radius was not. Ticket escalated.",
+      "end": true
+    }
+  }
+}

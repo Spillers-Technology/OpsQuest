@@ -1,0 +1,140 @@
+{
+  "id": "bsod-loop",
+  "schema": 2,
+  "ticket": "TKT-3306",
+  "title": "The Blue Screen That Blames Windows Update",
+  "hardTitle": "computer keeps doing the sad face thing",
+  "priority": "P3",
+  "category": "hardware",
+  "length": "short",
+  "client": "Ellery Fabrication",
+  "blurb": "Three crashes a day 'since the update.' The user has a theory. The evidence has another.",
+  "hardBlurb": "gary's machine blue screens like 3x a day now, started after that windows update you guys pushed. he wants the update taken off.",
+  "start": "n1",
+  "nodes": {
+    "n1": {
+      "text": "10:15. Gary runs production scheduling at Ellery Fabrication, and his PC has blue-screened three times a day since last week. He has a diagnosis ready:\n\n\"It started right after that update you people pushed. Take the update off and we're done here. I've got a floor full of jobs waiting on this machine.\"\n\nThe update DID land last week. So did a lot of other things.",
+      "hint": "'After' isn't 'because' — but the user's theory is testable, and so are the crash dumps. Which one does a professional check first?",
+      "choices": [
+        {
+          "label": "\"That timing is worth checking — let me pull the actual crash records off the machine so we fix the right thing the first time. Ten minutes.\"",
+          "next": "n2_evidence",
+          "tech": 2,
+          "people": 2,
+          "quality": "best",
+          "feedback": "Respect the theory, then test it — the stop codes and minidumps say what actually faulted, and 'so we fix it once' is language a man with a floor full of jobs accepts. Diagnosing from evidence instead of narrative is the whole job in one sentence."
+        },
+        {
+          "label": "Uninstall the update — it's what he asked for, and if the crashes stop, case closed.",
+          "next": "n2_rollback",
+          "tech": -2,
+          "people": 1,
+          "quality": "bad",
+          "feedback": "You just ran the user's experiment instead of your own. If the real fault is hardware, the crashes continue, Gary's trust drops ('IT did something and it's STILL broken'), and you've reintroduced whatever the update patched — all without reading a single log."
+        },
+        {
+          "label": "\"Updates don't usually cause this — it's probably hardware. We should plan on replacing the machine.\"",
+          "next": "n2_evidence",
+          "tech": 0,
+          "people": -2,
+          "quality": "ok",
+          "feedback": "Might even be right — but it's a guess wearing a lab coat, and it dismisses his observation before looking at anything. Guessing 'hardware' without evidence is the same sin as his 'it's the update,' just with better posture."
+        }
+      ]
+    },
+    "n2_evidence": {
+      "text": "The evidence sings: three days of minidumps, every one a different stop code — the signature of flaky hardware, not one bad driver. Event log seals it: dozens of disk warnings, 'bad block' and controller retries on the system SSD, starting nine days ago. Two days BEFORE the Windows update.\n\nThe drive is dying. The update was a bystander with bad timing.",
+      "hint": "A dying disk means one priority outranks the diagnosis conversation: the data on it, while it still reads. What happens before anything else pokes that drive?",
+      "choices": [
+        {
+          "label": "Protect the data NOW — verify last night's backup actually covers this machine, then image the drive while it still reads. Diagnosis talk comes after the data's safe.",
+          "next": "n3",
+          "tech": 3,
+          "people": 0,
+          "quality": "best",
+          "feedback": "A drive logging bad blocks is on a countdown you can't see. Backup verified, then a full image — in that order, before stress tests, before long diagnostics, before anything that makes the disk work harder. Data first is the rule that has no exceptions."
+        },
+        {
+          "label": "Run the vendor's full disk diagnostic to confirm the failure before doing anything drastic.",
+          "next": "n3",
+          "tech": -1,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "Confirmation feels rigorous, but a full surface scan is hours of sustained load on a drive already throwing bad blocks — you're interrogating a witness who might die under questioning. The event log already convicted this disk; image it first, confirm at leisure."
+        },
+        {
+          "label": "Call Gary with the good news first: \"It wasn't the update — your hard drive is failing.\"",
+          "next": "n3",
+          "tech": 0,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "Being right isn't the deliverable — and every minute spent on the vindication call is a minute the dying drive keeps spinning unprotected. Secure the data, THEN make a call that includes a plan instead of just a verdict."
+        }
+      ]
+    },
+    "n2_rollback": {
+      "text": "The update comes off. Wednesday: two blue screens. Thursday: three, one mid-save that eats an hour of schedule edits. Gary's follow-up ticket has a subject line in all caps and a new theory: \"YOUR ROLLBACK MADE IT WORSE.\"\n\nBack at the machine — this time in the logs — the event log shows disk warnings on the system SSD going back nine days: bad blocks, controller retries. It was never the update.",
+      "hint": "The evidence you skipped Monday is still here, and now there's less trust and a drive that's had four more days to decay. What order do things happen in now?",
+      "choices": [
+        {
+          "label": "Data first — verify backup, image the failing drive immediately — then call Gary: own the detour plainly, lay out the real cause and the replacement plan.",
+          "next": "n3",
+          "tech": 2,
+          "people": 2,
+          "quality": "best",
+          "feedback": "Right sequence, honestly narrated: 'I took the update theory at face value instead of checking the logs — that's on me. Here's what it actually is and here's the plan.' The detour cost days; owning it out loud is what keeps it from costing the relationship."
+        },
+        {
+          "label": "Reinstall the update quietly and start the hardware workup — no need to advertise the detour.",
+          "next": "n3",
+          "tech": 0,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "Gary watched the update come off, watched the crashes continue, and will watch it go back on. The only thing 'quietly' hides is your credibility. Techs recover from wrong turns; they rarely recover from being caught minimizing them."
+        },
+        {
+          "label": "Tell Gary the rollback ruled the update out, so now the real diagnosis can begin.",
+          "next": "n3",
+          "tech": 0,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "Technically true and four days late — the event log could have ruled it out in ten minutes on Monday, before the lost hour of schedule edits. Framing the detour as methodology reads better in the ticket than it does to the guy who lived it."
+        }
+      ]
+    },
+    "n3": {
+      "text": "Drive imaged clean, backup verified current. Now the fix itself. The machine is five years old and runs Gary's scheduling software plus a floor full of dependencies; a new SSD is $60 and an hour, a full replacement is real money and a half-day migration Gary can't easily give.\n\nGary: \"Just tell me what happens to my Thursday, and whether I'm doing this again in six months.\"",
+      "hint": "He's asking for two things: an impact statement in HIS units (hours of his week), and honesty about whether this fix is a patch or a cure.",
+      "choices": [
+        {
+          "label": "\"New drive from your image: you're down about ninety minutes, tomorrow morning, and the crashes end. Straight answer on six months: the drive was the fault, but the machine's five years old — I'll flag it for next refresh cycle so THAT conversation happens on a calendar, not a breakdown.\"",
+          "next": "end_done",
+          "tech": 2,
+          "people": 3,
+          "quality": "best",
+          "feedback": "Impact in his units, a fix matched to the actual fault, and the aging-machine truth handled as planning instead of upsell. 'On a calendar, not a breakdown' is how you talk a client into proactive replacement without ever selling them anything."
+        },
+        {
+          "label": "\"Honestly, at five years old this machine isn't worth a new drive — let's just quote a full replacement.\"",
+          "next": "end_done",
+          "tech": 0,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "Sometimes right, but it skips past his actual constraint — Thursday — and turns a $60 fix-now into a procurement cycle while he's crashing three times a day. Stabilize on the cheap part now; have the refresh conversation without a countdown running."
+        },
+        {
+          "label": "Swap the drive and close it out — no need to get into the machine's age.",
+          "next": "end_done",
+          "tech": 1,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "The crash is fixed; the conversation isn't finished. A five-year-old production-critical machine that just ate a drive deserves one sentence of foresight in the ticket and to the client — otherwise the next failure is another surprise P1 instead of a scheduled Tuesday."
+        }
+      ]
+    },
+    "end_done": {
+      "text": "Ticket notes: recurring BSODs on ELLERY-SCHED01 — varied stop codes + SMART/event-log disk errors predating the Windows update (user's initial theory, ruled out by minidump review). Drive imaged before intervention; backup verified. SSD replaced, restored from image, machine stable through a full production day. Refresh flag added for next budget cycle with Gary's manager cc'd.\n\nGary's close-out reply: \"No sad face all week. Fine. It wasn't the update.\"\n\nFrom Gary, that's a commendation.\n\nTicket closed.",
+      "end": true
+    }
+  }
+}

@@ -1,0 +1,312 @@
+{
+  "id": "ransomware-friday",
+  "schema": 2,
+  "ticket": "TKT-3205",
+  "title": "Friday Ransomware Report",
+  "hardTitle": "files renamed + weird READ ME thing pls call",
+  "priority": "P1",
+  "category": "security",
+  "length": "long",
+  "client": "Juniper Row Architects",
+  "blurb": "Friday, 4:45 PM: weird extensions, a ransom note, and an office still working.",
+  "hardBlurb": "Sasha says her project folder names changed and there's a text file telling her to email somebody. can this wait til monday?",
+  "start": "n1",
+  "nodes": {
+    "n1": {
+      "text": "Friday, 16:45. Sasha at Juniper Row Architects calls about project files gaining strange extensions. Each folder contains a text note demanding contact by email. She still has the laptop open and a mapped project share connected.\n\n\"I was going to reboot. Should I just keep working locally until you call back?\"",
+      "hint": "When encryption may be active, reduce connectivity before investigating. Preserve the running system unless incident leadership directs otherwise.",
+      "choices": [
+        {
+          "label": "Tell Sasha to disconnect Ethernet and Wi-Fi immediately, leave the laptop powered on, stop using it, and stay on the phone while you page the incident lead.",
+          "next": "n2_isolated",
+          "tech": 3,
+          "people": 2,
+          "quality": "best",
+          "feedback": "Isolation limits further reach while leaving volatile evidence available to responders. 'Do not power off' is not passivity; it preserves options after the network path is cut."
+        },
+        {
+          "label": "Have Sasha reboot into safe mode and delete the ransom note before anyone else sees it.",
+          "next": "n2_spread",
+          "tech": -3,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "Rebooting can destroy volatile evidence, and deleting the note removes an artifact responders and the insurer may need. Isolate first; preserve, do not tidy."
+        },
+        {
+          "label": "Let Sasha finish one urgent drawing while you remote in and browse the changed folders.",
+          "next": "n2_spread",
+          "tech": -3,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "Continued work keeps an affected endpoint connected to shares, and remote access adds another live path. Business urgency does not outrank containment during active encryption."
+        }
+      ]
+    },
+    "n2_isolated": {
+      "text": "Sasha unplugs the dock cable and disables Wi-Fi. The laptop stays on but untouched. Your incident lead acknowledges the page. In RMM, two other Juniper Row workstations are online and healthy; the file server shows a burst of renames from Sasha's account beginning at 16:39.",
+      "hint": "Containment is one host; scope is the environment. Use centralized telemetry and identity controls rather than touching the suspect machine.",
+      "choices": [
+        {
+          "label": "Disable Sasha's sessions and account per the incident runbook, preserve timestamps, and query endpoint, identity, and file-server telemetry for other affected hosts.",
+          "next": "n3_scope",
+          "tech": 3,
+          "people": 1,
+          "quality": "best",
+          "feedback": "The device is isolated, but credentials and server sessions can outlive its cable. Central scoping reduces spread without poking at the affected endpoint."
+        },
+        {
+          "label": "Start opening encrypted files on the server to see whether any can still be recovered.",
+          "next": "n3_damage",
+          "tech": -2,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "Sampling files does not contain anything and can alter access times or confuse the timeline. First establish affected paths, identities, and hosts from logs."
+        },
+        {
+          "label": "Wait for Monday because the laptop is disconnected and the immediate danger is over.",
+          "next": "n3_damage",
+          "tech": -3,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "One isolated endpoint does not prove one affected endpoint. Active file-server writes and possibly compromised credentials make this a live P1, even when the weekend is visible from your chair."
+        }
+      ]
+    },
+    "n2_spread": {
+      "text": "By the time the laptop comes back or the drawing is saved, the project share has another six minutes of encrypted files. A second user reports the same extensions. The original ransom note is gone from Sasha's desktop, and the incident lead asks why the host remained active.",
+      "hint": "You cannot recover the lost minutes. Stop new damage, preserve what remains, and give incident leadership an exact account.",
+      "choices": [
+        {
+          "label": "Isolate both endpoints, disable the implicated account and sessions, preserve the known timeline, and tell the incident lead exactly what actions were taken.",
+          "next": "n3_damage",
+          "tech": 3,
+          "people": 2,
+          "quality": "best",
+          "feedback": "Late containment still matters. Accurate disclosure lets the response team interpret missing artifacts and expanded scope instead of building a plan on a cleaner story that never happened."
+        },
+        {
+          "label": "Power off both laptops and omit the earlier reboot or continued-work instruction from the ticket.",
+          "next": "n3_damage",
+          "tech": -3,
+          "people": -3,
+          "quality": "bad",
+          "feedback": "More evidence is lost, and an incomplete timeline poisons every decision after it. Incident notes are not performance reviews; they are operational evidence."
+        }
+      ]
+    },
+    "n3_scope": {
+      "text": "Telemetry shows encryption activity confined to Sasha's laptop and the project-share paths her account could modify. No matching alerts appear on other endpoints. The file server is segmented but still serving unaffected departments.",
+      "hint": "Scope should drive containment. Avoid both underreacting and shutting down unrelated systems without incident-lead approval.",
+      "choices": [
+        {
+          "label": "Give the incident lead the bounded evidence, suspend writes to affected shares, preserve unaffected services, and continue monitoring for matching indicators.",
+          "next": "n4_backups",
+          "tech": 3,
+          "people": 1,
+          "quality": "best",
+          "feedback": "Targeted containment protects the business while acknowledging uncertainty. Scope is a current finding, not a lifetime guarantee, so monitoring stays active."
+        },
+        {
+          "label": "Shut down every Juniper Row server immediately, including phone and access-control systems.",
+          "next": "n3_damage",
+          "tech": -2,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "Broad shutdown may destroy evidence and creates new safety and business impacts. Major containment decisions belong with incident leadership and should follow observed scope."
+        }
+      ]
+    },
+    "n3_damage": {
+      "text": "The response now has confirmed activity on two endpoints and wider project-share damage, with gaps in volatile evidence. The incident lead declares a major incident and asks you to protect recovery assets before doing anything else.",
+      "hint": "Backups are part of the blast radius until their isolation and integrity are verified from a clean management path.",
+      "choices": [
+        {
+          "label": "Use a clean admin workstation to restrict backup access, verify immutability or offline copies, and hand backup testing to the designated recovery owner.",
+          "next": "n5_tainted",
+          "tech": 3,
+          "people": 1,
+          "quality": "best",
+          "feedback": "Recovery assets need protection before curiosity. A clean management plane and named recovery owner reduce the chance that response activity carries the incident into backups."
+        },
+        {
+          "label": "Reconnect Sasha's laptop and browse the backup repository to see whether yesterday's files open.",
+          "next": "n5_tainted",
+          "tech": -3,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "Never test backups from a suspect host. That exposes the recovery path to the very system you isolated and makes backup integrity harder to trust."
+        }
+      ]
+    },
+    "n4_backups": {
+      "text": "The incident lead asks about recovery. The backup console is reachable from a separate management network. Last night's job is green, but nobody has performed a test restore in four months. Sasha's laptop still has a saved shortcut to an older backup share.",
+      "hint": "A green job proves data was copied. Recovery confidence comes from isolation plus a clean, validated restore.",
+      "choices": [
+        {
+          "label": "Have the backup owner revoke the old share path, verify protected copies from a clean system, and test-restore a representative project to an isolated location.",
+          "next": "n5_clean",
+          "tech": 3,
+          "people": 1,
+          "quality": "best",
+          "feedback": "You protect the recovery plane before testing it, then prove recoverability without overwriting production. 'Backup succeeded' and 'restore works' are different sentences."
+        },
+        {
+          "label": "Restore last night's project share directly over production now; the job was green.",
+          "next": "n5_tainted",
+          "tech": -3,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "Restoring into an unvalidated environment can overwrite evidence, re-expose clean data, or collide with ongoing activity. Validate scope and restore safely before production cutover."
+        },
+        {
+          "label": "Ask Sasha to use her saved backup shortcut and check whether the files look normal.",
+          "next": "n5_tainted",
+          "tech": -3,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "A suspect endpoint must not touch recovery assets. Convenience paths are exactly the paths responders close first."
+        }
+      ]
+    },
+    "n5_clean": {
+      "text": "The isolated test restore succeeds, and protected copies predate the first observed encryption. The response team has a plausible recovery path, but containment and investigation are still active. A ransom note remains preserved as a file and screenshot.",
+      "hint": "Recovery evidence does not authorize restoration or attacker contact. Preserve the note and let incident leadership coordinate the next decisions.",
+      "choices": [
+        {
+          "label": "Hash and preserve the note per the runbook, do not contact its address, and provide recovery findings to the incident lead.",
+          "next": "n6_notify",
+          "tech": 2,
+          "people": 1,
+          "quality": "best",
+          "feedback": "The note is evidence, not a support channel. Preserve it without engaging, and keep negotiation or payment decisions with authorized leadership, insurer, and counsel."
+        },
+        {
+          "label": "Email the address from your work account to ask what proof they have and how much they want.",
+          "next": "n5_tainted",
+          "tech": -3,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "Unapproved contact can create legal, insurance, and operational complications while disclosing information. L1 preserves and escalates; L1 does not freelance negotiations."
+        }
+      ]
+    },
+    "n5_tainted": {
+      "text": "Recovery confidence is now reduced: backup access may have crossed a suspect path, production may have been overwritten too early, or evidence is incomplete. The incident remains containable, but restoration will take longer and require additional validation.",
+      "hint": "When recovery integrity is uncertain, disclose the uncertainty and widen expert review. Do not manufacture confidence.",
+      "choices": [
+        {
+          "label": "Freeze further restore activity, document exactly what touched the backup path, and escalate to the incident lead and backup specialist for integrity review.",
+          "next": "n6_notify_messy",
+          "tech": 2,
+          "people": 2,
+          "quality": "best",
+          "feedback": "Stopping and disclosing preserves the remaining options. Recovery estimates can absorb uncertainty; they cannot absorb hidden uncertainty."
+        },
+        {
+          "label": "Call the backups clean because the console still shows green jobs and proceed with a full restore.",
+          "next": "n6_notify_messy",
+          "tech": -3,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "Job status does not answer whether the copies, credentials, or restore target were exposed. A confident guess at this stage can compound the incident."
+        }
+      ]
+    },
+    "n6_notify": {
+      "text": "It is 17:18. The incident lead asks you to help build the notification list. The owner is at dinner, the cyber-insurance policy has a hotline, and Juniper Row's general counsel contact is in the client runbook. Staff have begun texting one another about \"hackers.\"",
+      "hint": "Incident notification follows authority and policy. Keep decision-makers informed through approved channels without speculating broadly.",
+      "choices": [
+        {
+          "label": "Notify MSP and client leadership through the incident tree, surface insurer and counsel contacts, and let authorized leadership decide external reporting and insurer engagement.",
+          "next": "n7_evidence",
+          "tech": 1,
+          "people": 3,
+          "quality": "best",
+          "feedback": "You ensure the right options reach the people empowered to use them. Legal, regulatory, insurer, and ransom decisions vary; L1 activates the plan rather than improvising policy."
+        },
+        {
+          "label": "Call the insurer yourself, state that all company data was stolen, and promise a full report tonight.",
+          "next": "n7_evidence",
+          "tech": -1,
+          "people": -3,
+          "quality": "bad",
+          "feedback": "Encryption does not by itself prove theft, and unsupported statements can complicate coverage and response. Escalate facts through the authorized contact path."
+        }
+      ]
+    },
+    "n6_notify_messy": {
+      "text": "It is 17:31. Client leadership joins to learn that the share damage is broader and backup integrity needs extra review. The owner asks, \"Can you guarantee we open Monday?\"",
+      "hint": "In a degraded recovery path, specificity and honesty are more useful than a comforting deadline you cannot support.",
+      "choices": [
+        {
+          "label": "State what is contained, what remains unknown, and when the next recovery checkpoint will occur; activate insurer and counsel contacts through leadership.",
+          "next": "end_degraded",
+          "tech": 1,
+          "people": 3,
+          "quality": "best",
+          "feedback": "A bounded update gives leadership something real to plan around. The worse the path, the more disciplined the promises must become."
+        },
+        {
+          "label": "Guarantee Monday opening so the owner can stop worrying, then ask the backup team to make it happen.",
+          "next": "end_degraded",
+          "tech": -2,
+          "people": -3,
+          "quality": "bad",
+          "feedback": "You cannot delegate certainty. A promise unsupported by validated backups and a recovery plan adds a second crisis to Monday morning."
+        }
+      ]
+    },
+    "n7_evidence": {
+      "text": "The incident lead assigns evidence collection. Central logs are retained, the isolated laptop is still powered on, and the file server audit trail identifies affected paths. A manager asks whether the laptop can be wiped tonight so Sasha can work Monday.",
+      "hint": "Eradication and rebuild follow evidence preservation and incident-lead approval, not calendar pressure.",
+      "choices": [
+        {
+          "label": "Keep the device isolated and unchanged for the response team, preserve centralized logs, and prepare a separate clean loaner for Sasha.",
+          "next": "n8_comms",
+          "tech": 3,
+          "people": 2,
+          "quality": "best",
+          "feedback": "A loaner separates business continuity from evidence handling. You do not have to sacrifice the investigation to give the user a Monday workstation."
+        },
+        {
+          "label": "Wipe and reimage the laptop now because the backups contain Sasha's documents.",
+          "next": "end_contained",
+          "tech": -3,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "Backed-up documents do not replace endpoint evidence. Rebuild only after the incident lead confirms acquisition and release of the device."
+        }
+      ]
+    },
+    "n8_comms": {
+      "text": "At 18:02, department heads want an all-staff message. Current facts: affected shares are contained, one endpoint is confirmed, investigation continues, and no one should reconnect isolated equipment or discuss the incident externally. Data theft is neither confirmed nor ruled out.",
+      "hint": "Good incident communication states actions, known facts, and the next update. It avoids labels and conclusions the evidence cannot support.",
+      "choices": [
+        {
+          "label": "Draft a leadership-approved notice with user instructions, factual scope, reporting channel, and next-update time; route media or external questions to the named spokesperson.",
+          "next": "end_contained",
+          "tech": 1,
+          "people": 3,
+          "quality": "best",
+          "feedback": "Operational instructions reduce accidental spread, while controlled language protects trust and the investigation. 'We are investigating' is precise when paired with what staff must do now."
+        },
+        {
+          "label": "Email everyone that Juniper Row suffered a confirmed data breach but backups will make it fine.",
+          "next": "end_degraded",
+          "tech": -2,
+          "people": -3,
+          "quality": "bad",
+          "feedback": "Neither exfiltration nor effortless recovery is established. Overstatement creates panic; understatement creates false confidence. Incident communications must live inside the evidence."
+        }
+      ]
+    },
+    "end_contained": {
+      "text": "The affected shares remain contained. A clean test restore gives leadership a recovery option, the original endpoint and ransom note are preserved, and insurer and counsel decisions sit with authorized leaders. Staff receive clear instructions and a scheduled update.\n\nThere is still a long weekend ahead, but the response team has evidence, recovery assets, and room to make decisions. Major incident remains open under incident leadership.",
+      "end": true
+    },
+    "end_degraded": {
+      "text": "The incident is contained, but early spread, lost evidence, uncertain backup exposure, or unsupported communications make recovery slower and decisions harder. Leadership cannot responsibly promise a Monday opening until specialists validate the remaining copies and scope.\n\nThe first five minutes did not cause the attack. They did decide how many good options survived it. Major incident remains open under incident leadership.",
+      "end": true
+    }
+  }
+}

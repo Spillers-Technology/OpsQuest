@@ -23,14 +23,17 @@ Every decision is scored across two tracks:
 
 Because the technically correct answer delivered badly is still a failed ticket.
 
-## Inside 0.0.5
+## Inside 0.1.0
 
-- **Ticket Queue Scenarios**: playable support tickets with priority levels, client context, branching choices, and coaching feedback.
+- **20 branching scenarios** across 10 categories (networking, security, printers, email, hardware, change management, comms, backup, escalation, onboarding) and four priority tiers — P1 critical down to P4 routine judgment calls. Choices have consequences: different paths, different endings.
+- **A living ticket queue**: 8 tickets a day, balanced by priority and length, rotated daily with a "pull more" refresh. Short, medium, and long scenarios so a session fits the time you have.
+- **Two difficulty modes**, chosen on first open and switchable anytime: **Assisted** (category tags + a senior-tech hint at every decision) and **Real Tech** (tickets exactly as they arrive: "HELP, JOHN", no tags, no hints).
+- **Fully animated play**: typewriter ticket prose, reactive scoring with haptics, screen-edge quality flashes, and a sequenced debrief reveal.
 - **Dual Scoring**: separate Tech and People points make the soft skills visible without watering down the technical work.
-- **Skill Bites**: short quiz drills for fundamentals, ticket craft, and security habits.
+- **Skill Bites**: short quiz drills for fundamentals, ticket craft, and security habits — with hints in Assisted mode.
 - **XP, Streaks, and a Daily Bonus**: lightweight progression, a streak flame, and +25 XP for the first ticket you close each day.
-- **Feedback Loop**: every debrief has a "this ticket felt wrong? tell us" link that opens a pre-addressed email.
-- **Local-First**: no account required, no backend, minimal dependency footprint.
+- **Local-first, server-optional**: no account required and everything works offline. Point the app at an optional self-hosted content server to pull new scenarios as they're published (see [Content Server](#content-server)).
+- **JSON scenario authoring**: scenarios are plain JSON with a documented format ([AUTHORING.md](AUTHORING.md)) and a validator (`npm run validate`) — write content without touching code.
 
 ### Screenshots
 
@@ -41,12 +44,18 @@ Because the technically correct answer delivered badly is still a failed ticket.
   <img src="docs/assets/screens/debrief.png" alt="Ticket debrief with dual scores" width="24%" />
 </p>
 
-### Ticket queue (4 scenarios)
+### Ticket queue (20 scenarios)
 
-- **Everything Is Down** (P1): a clinic outage with patients in the lobby, dead agents, a failed UPS, and a very real communication clock.
-- **The Password Loop** (P3): a repeat lockout call where identity verification, stale mobile credentials, and empathy all matter.
-- **Printer Down at Dunmore & Vance** (P2): a 4 PM court deadline, an angry partner, a jammed spooler queue, and a cable the cleaners knocked loose.
-- **The CEO Email** (P1): a gift-card phishing incident — scope the campaign, contain the compromised mailbox, and coach the reporter without shaming her.
+Highlights from the wave-1 content set:
+
+- **Everything Is Down** (P1, networking): a clinic outage with patients in the lobby, dead agents, a failed UPS, and a very real communication clock.
+- **Friday Ransomware Report** (P1, security, long): 4:45 PM, weird extensions, a ransom note — isolate first, preserve evidence, protect the backups.
+- **File Server Dead — Restore Under Fire** (P1, backup, long): a dying RAID, four days of backups that lied, and a restore you'd better verify first.
+- **Misrouted Contact on an ERP Outage** (P2, comms, long): the ticket says "HELP, JOHN". The contact card is the wrong John. The CFO is waiting.
+- **Firewall Firmware: Now or Never?** (P4, change-mgmt): the same patch is a six-minute yes for a print shop and a change-request no for a credit union.
+- **The Office-Store Switch** (P4, networking): a $20 "internet splitter", a helpful cable-tidier, and the broadcast storm they made together.
+
+...plus vendor blame games, vanishing emails, a dead laptop 40 minutes before an investor keynote, a Monday new hire nobody provisioned, and more.
 
 ### Skill Bite decks (3)
 
@@ -71,8 +80,8 @@ It is especially useful for teaching:
 Android APKs are available from GitHub Releases:
 
 - Package: `com.opsquest.app`
-- Current version name: `0.0.5`
-- Current version code: `5`
+- Current version name: `0.1.0`
+- Current version code: `6`
 - Releases: <https://github.com/Spillers-Technology/OpsQuest/releases>
 
 ## Run Locally
@@ -89,6 +98,16 @@ Then scan the QR code with Expo Go, or run on Android:
 ```bash
 npx expo start --android
 ```
+
+## Content Server
+
+OpsQuest works fully offline, but teams can self-host the optional content server
+([`server/`](server/)) to publish new scenarios to the app over time: players just paste
+the server URL in Settings — no accounts needed to read. The server ships with a
+web-based scenario editor (`/admin`) with local accounts, RBAC, and optional OIDC/SAML.
+
+Container images are published to GHCR (`ghcr.io/spillers-technology/opsquest-server`).
+See [server/README.md](server/README.md) for Docker Compose and Kubernetes deployment.
 
 ## Website
 

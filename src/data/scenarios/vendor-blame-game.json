@@ -1,0 +1,172 @@
+{
+  "id": "vendor-blame-game",
+  "schema": 2,
+  "ticket": "TKT-3204",
+  "title": "Vendor and Network Teams Dispute App Outage",
+  "hardTitle": "FWD: vendor says call your network people",
+  "priority": "P2",
+  "category": "escalation",
+  "length": "medium",
+  "client": "Marrowfield Distribution",
+  "blurb": "The warehouse app is down, and its vendor says the network is to blame.",
+  "hardBlurb": "ShipTrack won't open. their support says firewall. warehouse is waiting and I am tired of being the messenger",
+  "start": "n1",
+  "nodes": {
+    "n1": {
+      "text": "Marrowfield's shipping team cannot open ShipTrack, the line-of-business app that releases warehouse orders. Vendor support tells operations manager Devon, \"Your IT provider is blocking us.\"\n\nDevon calls you: \"They say network. You say app. I need boxes moving, not two help desks pointing at each other.\"",
+      "hint": "Before accepting or rejecting a layer, establish scope, timestamps, and a reproducible transaction both teams can discuss.",
+      "choices": [
+        {
+          "label": "Acknowledge the stalemate, get an exact failure time and affected workflows, reproduce once, and assign yourself as Devon's single coordinator.",
+          "next": "n2_evidence",
+          "tech": 2,
+          "people": 3,
+          "quality": "best",
+          "feedback": "The client should not be the packet carrying messages between vendors. One owner plus a shared timestamp gives the investigation both a human and technical center."
+        },
+        {
+          "label": "Tell Devon the internet is working, so the vendor needs to fix its application.",
+          "next": "n2_assumption",
+          "tech": -2,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "A healthy internet connection does not clear DNS, routing, TLS, ports, proxies, or the remote service. You have joined the blame game with less evidence than the vendor."
+        },
+        {
+          "label": "Escalate immediately to the network engineer with the note \"vendor says firewall.\"",
+          "next": "n2_assumption",
+          "tech": 0,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "Internal escalation is reasonable for a production outage, but an unsupported vendor claim gives the engineer nothing to test. Bring a time, source, destination, and symptom."
+        }
+      ]
+    },
+    "n2_evidence": {
+      "text": "At 13:14 you reproduce the failure from two warehouse PCs: login succeeds, but opening an order times out. DNS resolves, the vendor endpoint accepts a TCP connection, and firewall logs show the sessions allowed. A trace fails after the vendor edge; an unaffected branch produces the same result.",
+      "hint": "Package observations in a form that another team can falsify: sources, destination, timestamps, and layer-specific results.",
+      "choices": [
+        {
+          "label": "Attach the two timestamps, source addresses, resolved endpoint, allowed firewall sessions, and traces; ask the vendor to correlate them in its edge and application logs.",
+          "next": "n3_call",
+          "tech": 3,
+          "people": 1,
+          "quality": "best",
+          "feedback": "Evidence does not need to prove the final cause; it needs to narrow the disputed boundary. Correlation IDs and timestamps turn 'network issue' into a testable claim."
+        },
+        {
+          "label": "Send the vendor a screenshot of a successful ping and write \"not us.\"",
+          "next": "n3_call",
+          "tech": -1,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "Ping proves little about an authenticated application transaction, and contempt is not a diagnostic protocol. Share the full chain and invite a specific counter-test."
+        }
+      ]
+    },
+    "n2_assumption": {
+      "text": "Twenty-five minutes disappear into separate queues. The network engineer asks for a destination and timestamp; the vendor repeats \"firewall\"; Devon forwards both replies with no additional punctuation, which is somehow worse.",
+      "hint": "Stop the relay race. Rebuild the missing evidence and put the people who own each boundary in the same conversation.",
+      "choices": [
+        {
+          "label": "Own the lost time, reproduce the failure with timestamps and traces, then schedule an immediate three-way bridge with the vendor and network engineer.",
+          "next": "n3_call",
+          "tech": 2,
+          "people": 2,
+          "quality": "best",
+          "feedback": "A late evidence package is still better than another lap of assertions. Naming the delay without defending it helps Devon believe the next step is different."
+        },
+        {
+          "label": "Ask Devon to open a second vendor ticket and request a different technician.",
+          "next": "end_messy",
+          "tech": -2,
+          "people": -3,
+          "quality": "bad",
+          "feedback": "Changing agents without changing evidence resets the same argument and leaves the client coordinating it again. Escalation should add authority or data, not merely a new ticket number."
+        }
+      ]
+    },
+    "n3_call": {
+      "text": "On the bridge, vendor support says, \"Our status page is green. This has to be customer-side.\" Your network engineer confirms the captured sessions leave Marrowfield and the return handshake completes. Devon is listening.",
+      "hint": "A useful bridge has a shared test, named observers, and a next owner. Status pages are context, not transaction evidence.",
+      "choices": [
+        {
+          "label": "Run one live order-open test, announce the timestamp, have networking watch the flow, and ask the vendor to watch the matching request at its edge and app tier.",
+          "next": "n4_vendor",
+          "tech": 3,
+          "people": 2,
+          "quality": "best",
+          "feedback": "A synchronized test collapses three timelines into one fact pattern. It also keeps the conversation about an observed transaction instead of professional pride."
+        },
+        {
+          "label": "Ask the network engineer to disable outbound filtering temporarily to prove the firewall is innocent.",
+          "next": "n4_vendor",
+          "tech": -3,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "You already have allowed-session evidence. Broadly weakening controls during an outage creates risk without producing cleaner proof than the capture in hand."
+        },
+        {
+          "label": "Tell the vendor their green status page is obviously wrong and demand a supervisor.",
+          "next": "n4_vendor",
+          "tech": 0,
+          "people": -2,
+          "quality": "ok",
+          "feedback": "Escalation may be warranted, but accusation before the shared test makes cooperation harder. Let the transaction earn the escalation."
+        }
+      ]
+    },
+    "n4_vendor": {
+      "text": "The live test reaches the vendor edge at 13:52, then stalls between its gateway and order service. The vendor technician goes quiet, checks an internal channel, and says a deployment at 13:02 may have left one service pool unhealthy.",
+      "hint": "The disputed boundary is settled. Now convert discovery into ownership, recovery, and a client-facing update.",
+      "choices": [
+        {
+          "label": "Ask the vendor for an incident owner and recovery estimate, keep the bridge open, and summarize the verified fault domain to Devon without gloating.",
+          "next": "n5_restore",
+          "tech": 2,
+          "people": 3,
+          "quality": "best",
+          "feedback": "Once evidence settles the boundary, the goal is service restoration, not collecting an apology. A calm summary lets the client stop refereeing and start planning."
+        },
+        {
+          "label": "Tell Devon, \"See? We told you it was them,\" and leave the vendor to call back when fixed.",
+          "next": "n5_restore",
+          "tech": 0,
+          "people": -3,
+          "quality": "bad",
+          "feedback": "Being technically vindicated is not the same as serving the client. Stay through recovery and resist turning evidence into a victory speech."
+        }
+      ]
+    },
+    "n5_restore": {
+      "text": "The vendor drains the unhealthy pool. ShipTrack opens again at 14:11, and queued orders appear intact. Devon asks, \"Can I release the warehouse?\"",
+      "hint": "Recovery needs business validation, not just a successful technician login, plus records that shorten the next cross-vendor incident.",
+      "choices": [
+        {
+          "label": "Have a warehouse user complete a read-only check and one controlled order release, confirm the queue, then document the joint timeline and vendor incident number.",
+          "next": "end_clean",
+          "tech": 3,
+          "people": 2,
+          "quality": "best",
+          "feedback": "A real business transaction validates more than a login screen. The shared timeline becomes leverage and a runbook, not ammunition."
+        },
+        {
+          "label": "The login screen loads, so tell all users to resume and close both tickets.",
+          "next": "end_messy",
+          "tech": -2,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "Authentication was never the failed step. Validate the order path and queued data before releasing the whole warehouse into a possible partial recovery."
+        }
+      ]
+    },
+    "end_clean": {
+      "text": "A warehouse lead releases a test order, then the backlog. Your notes preserve the synchronized timestamps, traces, firewall disposition, vendor incident, recovery action, and client validation.\n\nDevon writes, \"Thank you for getting everyone on one call and keeping me out of the middle.\" Ticket closed.",
+      "end": true
+    },
+    "end_messy": {
+      "text": "The outage eventually reaches the right owner, but only after duplicated tickets, a premature recovery claim, or another round of client-operated message forwarding. The boxes move late and Devon requests a service review.\n\nThe technical failure lived at one vendor. The coordination failure was shared. Ticket escalated.",
+      "end": true
+    }
+  }
+}
