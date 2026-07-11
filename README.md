@@ -107,6 +107,12 @@ Planned next steps:
 - Shareable results and lightweight feedback from testers.
 - Public trial polish for the Play Store path.
 
+## Contributing
+
+Worked a real support queue? Scenario, coaching, accessibility, and app
+contributions are welcome. [CONTRIBUTING.md](CONTRIBUTING.md) explains the
+content principles, fictional-data requirement, and review steps.
+
 ## License
 
 OpsQuest is released under the [MIT License](LICENSE).

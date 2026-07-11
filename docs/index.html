@@ -16,6 +16,7 @@
     <meta property="og:image" content="assets/opsquest-hero.png" />
     <meta name="theme-color" content="#0b1220" />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="assets/lightbox.css" />
   </head>
   <body>
     <header class="site-header">
@@ -106,23 +107,33 @@
         </p>
         <div class="gallery" aria-label="OpsQuest app screenshots">
           <figure class="shot">
-            <img src="assets/screens/home.png" alt="Home screen: streak, XP level, and the ticket queue" loading="lazy" />
+            <button class="lightbox-trigger" type="button" data-lightbox>
+              <img src="assets/screens/home.png" alt="Home screen: streak, XP level, and the ticket queue" loading="lazy" />
+            </button>
             <figcaption>The queue: streak, XP, open tickets</figcaption>
           </figure>
           <figure class="shot">
-            <img src="assets/screens/scenario.png" alt="Scenario screen with a P1 ticket and branching choices" loading="lazy" />
+            <button class="lightbox-trigger" type="button" data-lightbox>
+              <img src="assets/screens/scenario.png" alt="Scenario screen with a P1 ticket and branching choices" loading="lazy" />
+            </button>
             <figcaption>Play the ticket, choice by choice</figcaption>
           </figure>
           <figure class="shot">
-            <img src="assets/screens/note.png" alt="Ticket note feedback after a choice with Tech and People points" loading="lazy" />
+            <button class="lightbox-trigger" type="button" data-lightbox>
+              <img src="assets/screens/note.png" alt="Ticket note feedback after a choice with Tech and People points" loading="lazy" />
+            </button>
             <figcaption>Every choice logs a coaching note</figcaption>
           </figure>
           <figure class="shot">
-            <img src="assets/screens/debrief.png" alt="Ticket debrief with combined score, rank, and XP award" loading="lazy" />
+            <button class="lightbox-trigger" type="button" data-lightbox>
+              <img src="assets/screens/debrief.png" alt="Ticket debrief with combined score, rank, and XP award" loading="lazy" />
+            </button>
             <figcaption>Debrief: dual scores and a rank</figcaption>
           </figure>
           <figure class="shot">
-            <img src="assets/screens/bites.png" alt="Skill Bites quiz question with explanation" loading="lazy" />
+            <button class="lightbox-trigger" type="button" data-lightbox>
+              <img src="assets/screens/bites.png" alt="Skill Bites quiz question with explanation" loading="lazy" />
+            </button>
             <figcaption>Skill Bites: fast drills with the why</figcaption>
           </figure>
         </div>
@@ -231,5 +242,6 @@
       <span>OpsQuest by Spillers Technology</span>
       <a href="https://github.com/Spillers-Technology/OpsQuest">GitHub</a>
     </footer>
+    <script src="assets/lightbox.js"></script>
   </body>
 </html>
