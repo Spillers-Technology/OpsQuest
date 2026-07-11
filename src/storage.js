@@ -8,6 +8,10 @@ const DEFAULT_PROFILE = {
   lastOpen: null,      // 'YYYY-MM-DD', local time
   lastTicketDay: null, // 'YYYY-MM-DD' of the last finished scenario (daily bonus)
   completed: {},       // scenarioId -> best combined score
+  difficulty: null,    // 'easy' | 'hard' | null = not chosen yet (first-open gate)
+  queueDay: null,      // 'YYYY-MM-DD' the current queue was built for
+  queueNonce: 0,       // bumped by the "pull more tickets" refresh
+  contentUrl: null,    // optional scenario server base URL
 };
 
 function normalizeProfile(value) {
@@ -24,6 +28,10 @@ function normalizeProfile(value) {
       profile.completed && typeof profile.completed === 'object' && !Array.isArray(profile.completed)
         ? profile.completed
         : DEFAULT_PROFILE.completed,
+    difficulty: profile.difficulty === 'easy' || profile.difficulty === 'hard' ? profile.difficulty : null,
+    queueDay: typeof profile.queueDay === 'string' ? profile.queueDay : null,
+    queueNonce: Number.isFinite(profile.queueNonce) ? profile.queueNonce : 0,
+    contentUrl: typeof profile.contentUrl === 'string' ? profile.contentUrl : null,
   };
 }
 

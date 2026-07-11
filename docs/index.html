@@ -40,8 +40,8 @@
           <h1 id="hero-title">OpsQuest</h1>
           <p class="lede">The IT support simulator you want to answer.</p>
           <p class="hero-copy">
-            Practice urgent outages, repeat callers, security checks, escalation notes, and client
-            communication in short playable tickets built for MSP and IT support teams.
+            Work through 20 branching scenarios across 10 support categories, from P1 outages to
+            P4 judgment calls. Your choices shape the path, the score, and the ending.
           </p>
           <div class="hero-actions" aria-label="Trial access actions">
             <a class="button primary" href="mailto:help@spillerstech.us?subject=OpsQuest%20public%20trial%20access">
@@ -60,16 +60,16 @@
 
       <section class="signal-strip" aria-label="OpsQuest highlights">
         <div>
-          <strong>Dual-score decisions</strong>
-          <span>Tech judgment and people skills count separately.</span>
+          <strong>8 tickets every day</strong>
+          <span>A balanced queue rotates daily, with a refresh when you want more.</span>
         </div>
         <div>
-          <strong>Real ticket pressure</strong>
-          <span>P1 outages, password loops, security beats, and follow-through.</span>
+          <strong>Two difficulty modes</strong>
+          <span>Choose category tags and hints, or take the raw ticket with no help.</span>
         </div>
         <div>
-          <strong>Bite-sized practice</strong>
-          <span>Finish a scenario or drill in the time between queue checks.</span>
+          <strong>Fully animated play</strong>
+          <span>Typewriter tickets, reactive scoring, haptics, and sequenced debriefs.</span>
         </div>
       </section>
 
@@ -79,9 +79,9 @@
           <div>
             <h2>Answer the ticket. Learn the habit.</h2>
             <p>
-              OpsQuest turns help desk training into branching support tickets. Every choice teaches
-              a pattern: scope before fixing, verify before resetting, communicate during outages,
-              and document the close.
+              OpsQuest turns help desk training into 20 branching support tickets across 10
+              categories and P1–P4 priorities. Every choice has consequences, opening different
+              paths and endings while teaching you to scope, verify, communicate, and document.
             </p>
           </div>
           <div class="ticket-preview" aria-label="Sample OpsQuest ticket preview">
@@ -140,55 +140,55 @@
       </section>
 
       <section class="section section-dark" id="inside">
-        <div class="section-kicker">Inside 0.0.5</div>
+        <div class="section-kicker">Inside 0.1.0</div>
         <h2>Built for the moments new techs actually face.</h2>
         <div class="feature-grid">
           <article>
-            <span class="badge red">P1</span>
-            <h3>Outage triage</h3>
+            <span class="badge red">20</span>
+            <h3>Branching tickets</h3>
             <p>
-              Practice finding the scale of an incident, using monitoring, guiding remote hands, and
-              keeping the customer calm while the fix is underway.
+              Face 20 scenarios across networking, security, printers, email, hardware, change
+              management, comms, backup, escalation, and onboarding — from P1 through P4.
             </p>
           </article>
           <article>
-            <span class="badge blue">P3</span>
-            <h3>Repeat-caller empathy</h3>
+            <span class="badge blue">8/day</span>
+            <h3>A living queue</h3>
             <p>
-              Learn why a third password lockout is not just another reset, and how verification,
-              root-cause questions, and follow-up turn frustration into trust.
+              Get a balanced queue of eight tickets that rotates daily. Pull more when you want a
+              refresh, with short, medium, and long scenarios for the time you have.
             </p>
           </article>
           <article>
-            <span class="badge amber">P2</span>
-            <h3>Deadline pressure</h3>
+            <span class="badge amber">2×</span>
+            <h3>Choose your difficulty</h3>
             <p>
-              A court filing at 4 PM, a jammed print queue, and an angry partner on the line —
-              triage two stacked root causes without deleting the work everyone is waiting on.
+              Assisted mode shows category tags and a senior-tech hint at every decision. Real Tech
+              gives you raw, messy tickets with no tags and no hints.
             </p>
           </article>
           <article>
-            <span class="badge red">SEC</span>
-            <h3>Security incidents</h3>
+            <span class="badge red">FX</span>
+            <h3>Animated feedback</h3>
             <p>
-              A gift-card phish from a lookalike CEO. Scope the campaign, contain the compromised
-              mailbox, preserve the evidence, and coach the reporter without shaming her.
+              Typewriter ticket prose, reactive scoring, haptics, screen-edge quality flashes, and
+              a sequenced debrief make every decision land.
             </p>
           </article>
           <article>
             <span class="badge cyan">XP</span>
-            <h3>Skill bites</h3>
+            <h3>Skill Bites</h3>
             <p>
-              Three quiz decks — networking first steps, ticket craft, and security basics — for
-              practice that fits between queue checks.
+              Drill networking fundamentals, ticket craft, and security habits in short quizzes.
+              Assisted mode includes hints when you need a nudge.
             </p>
           </article>
           <article>
             <span class="badge green">🔥</span>
-            <h3>Streaks and daily bonus</h3>
+            <h3>XP, streaks, and bonuses</h3>
             <p>
-              A streak flame for showing up, levels from Intern to vCIO, and +25 XP for the first
-              ticket you close each day.
+              Build XP, keep a streak going, and earn a +25 XP daily bonus for the first ticket you
+              close each day.
             </p>
           </article>
         </div>
@@ -216,6 +216,29 @@
               OpsQuest scores both sides of the job. It rewards good troubleshooting, but it also
               trains the soft edges that keep clients steady: plain-English updates, security
               confidence, ownership, and notes the next tech can trust.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-dark" id="self-host">
+        <div class="section-kicker">Local-first, server-optional</div>
+        <div class="split">
+          <div>
+            <h2>Self-host the content server.</h2>
+            <p>
+              OpsQuest works offline with no account required. Teams can optionally
+              <a href="https://github.com/Spillers-Technology/OpsQuest/tree/main/server">self-host the content server</a>
+              to publish new scenarios, using the GHCR image
+              <code>ghcr.io/spillers-technology/opsquest-server</code>. It includes a web scenario
+              editor for managing content.
+            </p>
+          </div>
+          <div class="ticket-preview">
+            <h3>Author in plain JSON</h3>
+            <p>
+              Scenarios use a documented JSON format with a validator, so teams can write and check
+              new content without changing app code.
             </p>
           </div>
         </div>

@@ -1,0 +1,388 @@
+{
+  "id": "help-john",
+  "schema": 2,
+  "ticket": "TKT-3301",
+  "title": "Misrouted Contact on an ERP Outage",
+  "hardTitle": "HELP, JOHN",
+  "priority": "P2",
+  "category": "comms",
+  "length": "long",
+  "client": "Hartwell Logistics",
+  "blurb": "A one-line ticket, a wrong contact card, and auditors in the conference room.",
+  "hardBlurb": "It's doing it again and I have the auditors here. Call me.",
+  "start": "n1",
+  "nodes": {
+    "n1": {
+      "text": "09:12. A ticket lands: subject \"HELP, JOHN\", body in its entirety:\n\n\"It's doing it again and I have the auditors here. Call me.\"\n\nThe PSA matched the sender to a contact card: John Merritt, Facilities Coordinator, Hartwell Logistics — office line listed. No system named, no error, no John in your team called John.",
+      "hint": "The ticketing system GUESSED who this is. Before you act on that guess, what does the original email actually say about who sent it?",
+      "choices": [
+        {
+          "label": "Open the original email behind the ticket: sender address, signature, anything that identifies who and what this really is.",
+          "next": "n2_meta",
+          "tech": 2,
+          "people": 0,
+          "quality": "best",
+          "feedback": "The contact card is the PSA's guess; the raw email is the evidence. Auto-matching mangles contacts constantly — shared mailboxes, similar names, stale records. Thirty seconds of reading beats a phone call to the wrong human."
+        },
+        {
+          "label": "Call the number on the contact card right now — it says urgent, so move.",
+          "next": "n2_wrongcall",
+          "tech": 0,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "Urgency instinct is right, target is unverified. You're about to spend your first five minutes on whoever the PSA THINKS sent this — and auto-matched contacts are wrong often enough that a glance at the original email should come first."
+        },
+        {
+          "label": "Reply to the ticket: \"Happy to help! Could you describe what system is doing what, and the best number to reach you?\"",
+          "next": "n2_reply",
+          "tech": -1,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "They wrote three sentences and said CALL ME with auditors in the room — a form-letter email asking them to fill in a template is the slowest possible channel and reads like you didn't listen. Dig, then dial."
+        }
+      ]
+    },
+    "n2_meta": {
+      "text": "The raw email tells a different story. Sender: jhainsworth@hartwell-logistics.com — Jordan Hainsworth, and the mobile signature reads \"J. Hainsworth, CFO\". Not John Merritt. Not facilities.\n\n\"It's doing it again\" + auditors + the CFO. Sounds like the ERP finance module — there's a vague memory of trouble there before.",
+      "hint": "You have a real name and a company now. Which channel gets you a live CFO fastest without trusting the bad contact card again?",
+      "choices": [
+        {
+          "label": "Call Hartwell's main line and ask for Jordan Hainsworth directly.",
+          "next": "n3_jordan",
+          "tech": 1,
+          "people": 2,
+          "quality": "best",
+          "feedback": "Verified human, fastest channel, no dependence on the corrupted contact record. \"Call me\" means call — and a CFO with auditors waiting notices who moved fast."
+        },
+        {
+          "label": "Email Jordan back: \"Got it — can you confirm which system and a callback number?\"",
+          "next": "n3_email",
+          "tech": 0,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "You found the right person and then picked the slow channel anyway. Someone who ends an email with \"Call me\" is telling you their inbox is not where they live right now."
+        },
+        {
+          "label": "Call John Merritt anyway — he's the contact on file, he can walk you over to whoever needs help.",
+          "next": "n3_wrongjohn",
+          "tech": -1,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "You have the real requester's name in front of you and you're still following the bad record. Facilities John has no idea about ERP exports — you're about to confuse a bystander and burn the CFO's time."
+        }
+      ]
+    },
+    "n2_wrongcall": {
+      "text": "John Merritt picks up on the third ring, entirely calm: \"Submitted a ticket? No... I do building stuff. Auditors? I mean, I saw people in suits in the conference room. Are you sure you have the right John? I'M John.\"\n\nFive minutes gone. Somewhere in that building, the real requester is still waiting.",
+      "hint": "The card was wrong. The original email is still sitting right there — and so is the option to admit the miss quickly and move.",
+      "choices": [
+        {
+          "label": "Apologize briefly, let him go, and pull the original email for the real sender.",
+          "next": "n2_meta_late",
+          "tech": 1,
+          "people": 1,
+          "quality": "best",
+          "feedback": "Fast, clean recovery: thirty seconds of grace with the wrong John, then straight to the evidence you should have read first. Everyone respects a quick 'my mistake, thanks anyway.'"
+        },
+        {
+          "label": "\"Could you walk around and ask if anyone's having computer trouble? Someone there submitted this.\"",
+          "next": "n3_wrongjohn",
+          "tech": -1,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "You just deputized the facilities coordinator to wander a logistics company asking about a mystery ticket while a CFO waits with auditors. The answer is in the email headers on your own screen."
+        },
+        {
+          "label": "Ask dispatch to figure out who at Hartwell actually submitted this while you work your other tickets.",
+          "next": "n3_dispatch",
+          "tech": 0,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "Dispatch can untangle it, but you've turned a thirty-second header check into a queue hop while an urgent ticket idles. Hand off the contact-card CLEANUP later — not the finding of your own requester."
+        }
+      ]
+    },
+    "n2_reply": {
+      "text": "09:58. The reply arrives, and it has teeth:\n\n\"The ERP. The one your company manages. Exports keep kicking everyone out and the AUDITORS have now been waiting an hour. This is Jordan Hainsworth, the CFO, since apparently that isn't on file. Call me at the main office line. Please hurry.\"\n\nAn hour, gone to a template email.",
+      "hint": "You've lost time you can't get back. The only move that recovers trust now is speed plus ownership — no excuses about the ticket being vague.",
+      "choices": [
+        {
+          "label": "Call the main line immediately, own the slow start in one sentence, and get to work.",
+          "next": "n2_meta_late",
+          "tech": 0,
+          "people": 2,
+          "quality": "best",
+          "feedback": "One sentence of ownership — 'you're right, I should have called first' — then action. Explaining WHY you were slow (\"the ticket didn't specify...\") reads as blaming the client for your form letter."
+        },
+        {
+          "label": "Reply by email again — apologize and promise to look at the ERP within the hour.",
+          "next": "n3_wrongjohn",
+          "tech": -1,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "A second email, after the first one cost an hour, promising future work on a NOW problem. Jordan asked for a phone call twice. This is how MSPs end up in the 'looking at alternatives' conversation."
+        },
+        {
+          "label": "Ask dispatch to reclassify the ticket P1 and route it to whoever's free.",
+          "next": "n3_dispatch",
+          "tech": 0,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "Raising the priority is honest — but pushing the ticket back into the pool after an hour of silence means Jordan starts over with a stranger. You have the context now; the fastest tech for this ticket is you."
+        }
+      ]
+    },
+    "n2_meta_late": {
+      "text": "The raw email, at last: jhainsworth@hartwell-logistics.com — \"J. Hainsworth, CFO\" in the mobile signature. The PSA had auto-matched the sender to John Merritt in facilities, and nobody ever caught it.\n\nClock's burning. The CFO. The ERP, probably. Auditors, definitely.",
+      "hint": "Right person identified, time already lost. Fastest verified channel — and maybe one sentence acknowledging the delay.",
+      "choices": [
+        {
+          "label": "Call Hartwell's main line, ask for Jordan Hainsworth, and open with a brief acknowledgment of the runaround.",
+          "next": "n3_jordan",
+          "tech": 1,
+          "people": 2,
+          "quality": "best",
+          "feedback": "Direct, verified, and honest about the stumble without wallowing in it. 'This took longer to reach you than it should have — I'm on it now' resets the call better than pretending the last twenty minutes didn't happen."
+        },
+        {
+          "label": "Email Jordan asking for a callback number.",
+          "next": "n3_email",
+          "tech": 0,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "Still the slow channel. The company main line is public, the CFO is standing next to auditors, and 'Call me' has been on the table since 09:12."
+        },
+        {
+          "label": "Update the contact card first so the ticket routes correctly, then reach out.",
+          "next": "n3_dispatch",
+          "tech": 1,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "Right chore, catastrophically wrong moment. Data hygiene is the AFTER-action item; a CFO is waiting on a phone call you haven't made yet."
+        }
+      ]
+    },
+    "n3_wrongjohn": {
+      "text": "10:20. It unravels: John Merritt mentioned the weird IT call to the office manager, who mentioned it to Jordan Hainsworth, who is now on the phone with your service desk asking why the person who was told to call an hour ago has instead been \"interviewing the janitorial staff.\"\n\nThe call gets routed to you. Jordan is icy: \"The exports. The auditors. Today, if possible.\"",
+      "hint": "Nothing rebuilds trust here except competence, starting immediately. Own it in one sentence, then show you already know what to look at.",
+      "choices": [
+        {
+          "label": "\"You're right, that was a mess on our side. I have your ERP server up on my screen right now — tell me what the auditors need first and I'll work backwards from that.\"",
+          "next": "n5_diag",
+          "tech": 1,
+          "people": 2,
+          "quality": "best",
+          "feedback": "Ownership in nine words, then straight to their outcome — what the AUDITORS need, not what the server needs. When you've burned goodwill, competence delivered fast is the only apology that counts."
+        },
+        {
+          "label": "Explain the contact-card mixup so Jordan understands it wasn't really your fault.",
+          "next": "n5_diag",
+          "tech": 0,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "To Jordan, 'the system matched the wrong John' is indistinguishable from 'our tooling is broken and I followed it anyway.' Explanations that end in someone else's fault still end with the client having waited an hour."
+        },
+        {
+          "label": "Apologize and offer to have your service manager call them after the incident.",
+          "next": "n5_diag",
+          "tech": 0,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "The escalation offer isn't wrong — but leading with process while the exports are still broken misreads the room. Fix first; the relationship repair call lands better after the auditors have their reports."
+        }
+      ]
+    },
+    "n3_email": {
+      "text": "Twenty-five minutes later, a terse reply: \"Main line. Ask for me. The auditors have started making small talk with my controller, which means we are past the polite stage.\"\n\nYou call. Jordan answers in one ring.",
+      "hint": "You're finally on the phone. Get the symptom and the stakes in the same breath — what's failing, and what do the auditors need out of it?",
+      "choices": [
+        {
+          "label": "\"Tell me exactly what's happening and what the auditors are waiting on — I'll work on both at once.\"",
+          "next": "n5_diag",
+          "tech": 1,
+          "people": 1,
+          "quality": "best",
+          "feedback": "Symptom and business need, one question. The auditors don't want a healthy server; they want trial-balance exports. Knowing the OUTCOME lets you sequence the fix so the important part comes back first."
+        },
+        {
+          "label": "\"Can you send me a screenshot of the error next time it happens?\"",
+          "next": "n5_diag",
+          "tech": 0,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "You finally have the CFO live on the phone and you're asking them to go away and produce artifacts. Screenshots are for async tickets; a live witness with auditors behind them is for extracting everything in one pass."
+        },
+        {
+          "label": "\"I'm pulling up your ERP server now — stay on with me while I look.\"",
+          "next": "n5_diag",
+          "tech": 1,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "Action is good, but you skipped the thirty seconds of what-and-when that aims it. 'Kicking everyone out' could be the app, the server, or the network — let the witness narrow it before you dive."
+        }
+      ]
+    },
+    "n3_dispatch": {
+      "text": "Dispatch untangles it in ten minutes: the sender is Jordan Hainsworth, CFO. \"Also,\" the dispatcher adds, \"they called US while I was looking. They're... warm. Transferring you.\"\n\nJordan, controlled but clipped: \"The ERP keeps throwing everyone out mid-export. The auditors need trial balances they were promised at nine.\"",
+      "hint": "You got the right person the slow way. They've told you the symptom AND the stake — acknowledge both and get moving.",
+      "choices": [
+        {
+          "label": "\"Understood — exports failing, auditors need trial balances. I'm on your ERP server now; give me two minutes of your eyes while I check it.\"",
+          "next": "n5_diag",
+          "tech": 1,
+          "people": 1,
+          "quality": "best",
+          "feedback": "Playing back the symptom and the stake in their own words is the fastest trust-builder there is — it proves the message got through. Then straight to work, keeping the witness on the line."
+        },
+        {
+          "label": "\"Before I dig in — roughly how many users, and does this happen every export or just big ones?\"",
+          "next": "n5_diag",
+          "tech": 1,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "Legitimate questions, wrong tempo. You can scope WHILE the RMM loads instead of running a full intake interview on someone who's been waiting since nine."
+        },
+        {
+          "label": "\"We'll treat this as high priority and someone will be working on it shortly.\"",
+          "next": "n5_diag",
+          "tech": -1,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "SOMEONE? You're the someone. Ticket-speak on a live call with an executive who's already been bounced around once is how 'high priority' starts sounding like 'hold music.'"
+        }
+      ]
+    },
+    "n3_jordan": {
+      "text": "\"Hainsworth.\" You introduce yourself; the relief is audible. \"Finally. Okay — the ERP finance module keeps throwing everyone out mid-export. The auditors need trial balance reports and every attempt dies at about eighty percent. It did this once months ago, some IT person fixed it, I never heard how.\"\n\nA prior incident. You check the ticket history for that fix: nothing. Whoever fixed it last time left no notes.",
+      "hint": "A repeat incident with no notes from last time — you're starting from zero on a known problem. The server's vitals will say more than the app's error message.",
+      "choices": [
+        {
+          "label": "Pull up the ERP app server in the RMM — resources, services, event log around the failure times — while Jordan's still on the line.",
+          "next": "n5_diag",
+          "tech": 2,
+          "people": 1,
+          "quality": "best",
+          "feedback": "Exports dying at 80% smells like the server running out of something — and the RMM shows memory, services, and event logs in one place. Keeping the witness on the line means answers in seconds, not email round-trips."
+        },
+        {
+          "label": "Ask Jordan to try the export one more time so you can see it fail live.",
+          "next": "n5_diag",
+          "tech": 0,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "Watching a failure live has value — but it costs ten minutes of a CFO's morning to reproduce something that's already failed five times and is probably already all over the event log. Read the evidence you have first."
+        },
+        {
+          "label": "Tell Jordan the last tech clearly fixed it before, so it's likely quick — you'll call back within the hour.",
+          "next": "n5_diag",
+          "tech": -1,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "You just made a promise backed by notes that don't exist. 'Someone fixed it once' with zero documentation is folklore, not a diagnosis — and hanging up on your only witness makes everything slower."
+        }
+      ]
+    },
+    "n5_diag": {
+      "text": "The RMM tells the story: the ERP app server has memory pinned at 98%. A reporting service — HXP-ExportSvc — has been crash-looping since 08:40, each crash orphaning a worker that never releases its allocation. Every export inflates it further, hits the ceiling at ~80% complete, and takes every session down with it.\n\nEvent log shows the same crash signature on one day, three months ago. The day of the mystery fix nobody wrote down.",
+      "hint": "You know the culprit service. The auditors are mid-wait — what's the smallest action that unblocks exports, and what do the users need to hear BEFORE you do it?",
+      "choices": [
+        {
+          "label": "Tell Jordan the plan in plain words — \"one service is wedged; restarting it will drop ERP sessions for about a minute, tell everyone to pause\" — then restart the service and watch it.",
+          "next": "n6_restart",
+          "tech": 2,
+          "people": 2,
+          "quality": "best",
+          "feedback": "Targeted fix, blast radius announced before it happens. A sixty-second interruption people were warned about builds trust; the same interruption as a surprise burns it. And restarting one service beats rebooting a server the whole company is on."
+        },
+        {
+          "label": "Reboot the whole ERP server — clears the memory, clears the crashed service, clean slate.",
+          "next": "n6_reboot",
+          "tech": 0,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "It'll work, but it's the sledgehammer: ten-plus minutes of full downtime for every Hartwell user to fix one wedged service — with auditors timing you. Try the scalpel first; the sledgehammer is still there if it fails."
+        },
+        {
+          "label": "Ask Jordan to have everyone stop running exports until tonight so the server stays up, and schedule the fix after hours.",
+          "next": "end_burned",
+          "tech": -2,
+          "people": -3,
+          "quality": "bad",
+          "feedback": "The exports ARE the emergency — the auditors didn't come for the vibes. 'Stop doing the thing you need until it's convenient for us' is how a P2 becomes an escalation to your account manager by lunch."
+        }
+      ]
+    },
+    "n6_restart": {
+      "text": "10:41. Service restarted; memory falls off a cliff, in the good way. Jordan runs a trial balance export with you on the line: 100%. Then a second one — clean. You can hear someone in the conference room say \"oh, finally\" with feeling.\n\nJordan: \"Okay. What do I tell the auditors about whether this holds?\"",
+      "hint": "Two loose ends made this ticket miserable: a service that's crashed twice in three months, and a contact card that pointed at the wrong human. The close is where both get fixed — or don't.",
+      "choices": [
+        {
+          "label": "Give Jordan a straight answer and monitoring for today, then write it all down: crash signature, the fix, a follow-up for the recurring service — and correct the contact card and ticket title so the next tech never meets the wrong John.",
+          "next": "end_clean",
+          "tech": 2,
+          "people": 2,
+          "quality": "best",
+          "feedback": "This close fixes the incident, the recurrence, AND the reason the ticket went sideways. The contact-card correction is thirty seconds of unglamorous work that saves the next tech an hour — that's what the notes-less tech before you failed to do."
+        },
+        {
+          "label": "Confirm it's stable, write up the root cause and follow-up — the contact card thing can wait for a slow day.",
+          "next": "end_messy",
+          "tech": 1,
+          "people": 1,
+          "quality": "ok",
+          "feedback": "Good incident notes, but the landmine that detonated this morning is still armed: next ticket from Jordan's phone routes to facilities-John again. 'A slow day' is where data hygiene goes to die."
+        },
+        {
+          "label": "Close it: \"Restarted HXP-ExportSvc, exports confirmed working.\"",
+          "next": "end_messy",
+          "tech": -1,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "That's the same note-shaped void the LAST tech left you — the one that made today start from zero. Second crash in three months with no root-cause follow-up means you'll both be here again, and the contact card will misroute that ticket too."
+        }
+      ]
+    },
+    "n6_reboot": {
+      "text": "The server takes eleven minutes to come back — you spend most of them narrating boot progress to a silent phone line while, somewhere behind Jordan, auditors discuss lunch options.\n\n11:02. ERP up, memory normal, exports run clean. Jordan, dry: \"Glad that's over. Is it over?\"",
+      "hint": "It works, but you took the long way and they felt it. The close still decides whether this recurs — and whether the next ticket finds the right person.",
+      "choices": [
+        {
+          "label": "Be honest that the service itself has a repeat-crash history, log the follow-up to get it fixed properly, and correct the contact card and ticket title while you're in there.",
+          "next": "end_clean",
+          "tech": 2,
+          "people": 1,
+          "quality": "best",
+          "feedback": "The reboot was the slow road, but the close is what clients remember: a straight answer about recurrence risk, a follow-up that's actually logged, and the contact card fixed so 'HELP, JOHN' never haunts anyone again."
+        },
+        {
+          "label": "\"It's over. All set.\" Close the ticket with the reboot noted.",
+          "next": "end_messy",
+          "tech": -1,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "It's not over — a service that crash-loops twice in three months has an appointment to do it again, and 'rebooted server' notes won't help whoever answers that call. Which, thanks to the still-wrong contact card, will start with a call to facilities."
+        },
+        {
+          "label": "Log a follow-up on the crashing service; leave the contact records for the account team to sort out.",
+          "next": "end_messy",
+          "tech": 1,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "The service follow-up is the important half. But 'someone else's job' is exactly how the contact card survived the LAST incident — you're the only person alive who currently knows it's wrong."
+        }
+      ]
+    },
+    "end_clean": {
+      "text": "Ticket notes: 'HELP, JOHN' → PSA auto-matched sender to wrong contact (John Merritt, facilities); actual requester Jordan Hainsworth, CFO — contact card corrected, ticket retitled. Root cause: HXP-ExportSvc crash-looping, memory exhaustion killing sessions at ~80% export. Service restarted, exports verified live with client. Recurring-crash follow-up logged with vendor case attached. Second occurrence — prior fix was undocumented.\n\nJordan's email to your account manager: \"Rocky start, strong finish. The auditors got everything by noon.\"\n\nTicket closed.",
+      "end": true
+    },
+    "end_messy": {
+      "text": "The exports work. The auditors got their reports. The ticket closes.\n\nThe contact card still says John Merritt.\n\nSeven weeks later, a ticket arrives: \"It's doing it AGAIN and I am not explaining this a third time. — J.H.\" The PSA routes it to facilities. A tech you've never met picks it up, reads the contact card, and dials John Merritt, who sighs and says: \"I'M John. You want Jordan. This happens every time.\"\n\nTicket closed. Its sequel is already in the queue.",
+      "end": true
+    },
+    "end_burned": {
+      "text": "Jordan doesn't argue. That's the tell.\n\nBy 11:15 your account manager is on the phone: Hartwell's CFO called the owner directly — auditors billed them for a half-day of waiting. L2 picks up the ticket, restarts the wedged service in four minutes, and asks, not unkindly, why that hadn't happened two hours ago.\n\nThe post-incident review has your name in it more times than you'd like. The contact card, at least, finally gets fixed — by someone else, with commentary.\n\nTicket closed. Trust: reopened.",
+      "end": true
+    }
+  }
+}

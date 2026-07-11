@@ -1,0 +1,144 @@
+{
+  "id": "vanishing-emails",
+  "schema": 2,
+  "ticket": "TKT-3102",
+  "title": "Client Emails Never Arrive",
+  "hardTitle": "EMAILS DISAPPEARING?? several customers said they sent",
+  "priority": "P3",
+  "category": "email",
+  "length": "short",
+  "client": "Elm & Harbor Design",
+  "blurb": "Clients say they emailed the account manager, but nothing appeared in her inbox.",
+  "hardBlurb": "jules says clients keep following up about emails she never got. email seems fine otherwise??",
+  "start": "n1",
+  "nodes": {
+    "n1": {
+      "text": "Jules Mercer, an account manager at Elm & Harbor, says three clients mentioned messages she never answered. New internal mail arrives normally, and she can send without error.\n\n\"I don't know what I didn't get, which is a very annoying kind of evidence. One client says she wrote Tuesday morning.\"",
+      "hint": "Start with one traceable example and determine whether the service accepted, rejected, quarantined, or delivered it.",
+      "choices": [
+        {
+          "label": "Get one sender address, approximate timestamp, and subject, then run a message trace before changing Jules's mailbox.",
+          "next": "n2",
+          "tech": 3,
+          "people": 1,
+          "quality": "best",
+          "feedback": "Mail-flow triage starts with a specimen. A trace tells you which layer owns the mystery; without one, every rule deletion and quota change is hopeful vandalism."
+        },
+        {
+          "label": "Check whether Jules's mailbox is full, then increase her quota if it is close.",
+          "next": "n2",
+          "tech": 1,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "Quota is worth checking, but a nearly full mailbox is not the same as a rejected message. Trace first: delivery status keeps plausible causes from becoming assumed causes."
+        },
+        {
+          "label": "Tell Jules to ask all three clients to resend their messages and watch the inbox.",
+          "next": "n2",
+          "tech": -1,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "Resending may reproduce the problem, but it makes clients repeat work before you preserve the original evidence. It also fails to find what else may already be missing."
+        }
+      ]
+    },
+    "n2": {
+      "text": "The trace finds Tuesday's message. Exchange Online accepted it, passed filtering, and delivered it to Jules's Inbox at 09:14. No rejection, no quarantine action. Her mailbox is at 61 percent.\n\nJules searches the sender and gets nothing.",
+      "hint": "The service says delivered. Move inward: mailbox rules, folders, archive, and client-side views now outrank transport theories.",
+      "choices": [
+        {
+          "label": "Review Jules's server-side inbox rules and search all folders, including Archive and Deleted Items, using message details from the trace.",
+          "next": "n3",
+          "tech": 3,
+          "people": 0,
+          "quality": "best",
+          "feedback": "Accepted and delivered moves the fault boundary into the mailbox. Server-side rules apply even when Outlook is closed, so they come before rebuilding a local profile."
+        },
+        {
+          "label": "Check the tenant quarantine anyway in case the trace status is misleading.",
+          "next": "n3",
+          "tech": 0,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "A quick quarantine check is harmless, but the trace already says the message cleared filtering and reached the Inbox. Follow the strongest evidence rather than restarting the checklist."
+        },
+        {
+          "label": "Recreate Jules's Outlook profile because search must be broken.",
+          "next": "n3",
+          "tech": -2,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "A profile rebuild is expensive and local; it cannot explain a server-side move that also affects Outlook on the web. Check the mailbox from the service side before rebuilding the window onto it."
+        }
+      ]
+    },
+    "n3": {
+      "text": "There it is: a rule named \"Client filing\" moves mail containing \"proposal,\" \"invoice,\" or \"revision\" into an RSS Feeds subfolder and marks it read. Jules remembers creating something similar during a busy week, but not choosing that folder. Seventeen messages are sitting there.",
+      "hint": "Recover the mail, preserve enough evidence to explain the impact, and prevent a rushed cleanup from losing messages.",
+      "choices": [
+        {
+          "label": "Screenshot the rule, disable it, move the 17 messages back in a controlled batch, and have Jules review them before you delete the rule.",
+          "next": "n4",
+          "tech": 2,
+          "people": 2,
+          "quality": "best",
+          "feedback": "Disable stops new movement; documentation explains scope; controlled recovery avoids turning the Inbox into another mystery. Jules still owns the business decision about which recovered messages need replies."
+        },
+        {
+          "label": "Delete the rule and drag all 17 messages into the Inbox at once.",
+          "next": "n4",
+          "tech": 1,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "It fixes the flow, but erases the configuration before documenting it and creates an undifferentiated pile of read mail. Fast cleanup can make impact review harder."
+        },
+        {
+          "label": "Leave the rule enabled but change its destination to a folder Jules can see.",
+          "next": "end_partial",
+          "tech": -1,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "A broad keyword rule will keep removing important mail from the Inbox even with a friendlier folder name. When the automation's intent is unclear and impact is proven, disable first and redesign later."
+        }
+      ]
+    },
+    "n4": {
+      "text": "Mail flow is normal, and Jules recognizes all 17 recovered messages. Two need same-day replies. She asks, \"So next time, what order do you check? Everybody kept saying spam filter.\"",
+      "hint": "Give her a plain-language summary and leave the ticket useful for the next technician.",
+      "choices": [
+        {
+          "label": "Explain: trace one known message first; if rejected, fix transport or quota; if quarantined, inspect filtering; if delivered, check rules and folders. Document the bad rule and recovered-message count.",
+          "next": "end_clean",
+          "tech": 2,
+          "people": 2,
+          "quality": "best",
+          "feedback": "That order follows the message inward and prevents random changes. The ticket note turns one solved mystery into a reusable diagnostic path."
+        },
+        {
+          "label": "Tell Jules it was just a bad Outlook rule and close the ticket.",
+          "next": "end_clean",
+          "tech": 0,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "Accurate, but thin. The client asked for the model, and future support needs the scope and recovery details, not just the final noun."
+        },
+        {
+          "label": "Recommend never using inbox rules again.",
+          "next": "end_partial",
+          "tech": -1,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "Rules are useful automation; unreviewed broad rules are the problem. Good support teaches safe use instead of banning the feature that happened to be misconfigured."
+        }
+      ]
+    },
+    "end_clean": {
+      "text": "The rule is documented and removed, all 17 messages are recovered, and Jules answers the two time-sensitive clients before lunch. The trace-to-mailbox path is captured in the ticket.\n\nHer closing note: \"Mystery solved. Also, RSS Feeds has now received more attention than at any point in its natural life.\"",
+      "end": true
+    },
+    "end_partial": {
+      "text": "Some mail is recovered, but the broad automation remains or the investigation stalls before it is safely removed. Jules has a workaround, not confidence, and another client message later takes the scenic route through her mailbox.\n\nThe follow-up ticket begins where the first one should have: trace, then filter, then mailbox.",
+      "end": true
+    }
+  }
+}

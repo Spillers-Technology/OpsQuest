@@ -2,7 +2,7 @@
   "expo": {
     "name": "Ops Quest",
     "slug": "ops-quest",
-    "version": "0.0.5",
+    "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#0B1220",
@@ -14,7 +14,8 @@
     },
     "android": {
       "package": "com.opsquest.app",
-      "versionCode": 5
+      "versionCode": 6,
+      "permissions": ["android.permission.VIBRATE"]
     },
     "plugins": [
       "expo-asset",

@@ -1,0 +1,120 @@
+{
+  "id": "monday-new-hire",
+  "schema": 2,
+  "ticket": "TKT-3201",
+  "title": "Monday New Hire Was Never Provisioned",
+  "hardTitle": "FW: Maya starts monday - is she all set??",
+  "priority": "P3",
+  "category": "onboarding",
+  "length": "short",
+  "client": "Northstar Civic Design",
+  "blurb": "Thursday afternoon. Monday starter. Zero account, license, or laptop.",
+  "hardBlurb": "just checking Maya has everything for 8am Monday. form was sent a while ago I think",
+  "start": "n1",
+  "nodes": {
+    "n1": {
+      "text": "Thursday, 15:37. Lena in HR calls about Maya, a new project coordinator starting Monday at 08:00. You find the onboarding request untouched in a shared mailbox since last week. No account, no license, and the spare-laptop shelf is empty.\n\n\"Please tell me she isn't going to spend her first morning watching us panic.\"",
+      "hint": "Separate dependencies you control from procurement and approval dependencies you do not. Then give the client a truthful plan.",
+      "choices": [
+        {
+          "label": "Check the approved onboarding form, license inventory, hardware stock, and shipping cutoffs; then call Lena with a Monday-ready minimum and open risks.",
+          "next": "n2_owned",
+          "tech": 3,
+          "people": 2,
+          "quality": "best",
+          "feedback": "Parallel triage turns 'nothing is ready' into a dependency list. A credible minimum beats a blanket promise, especially when a courier and an approver both have votes."
+        },
+        {
+          "label": "Promise Lena everything will be ready Monday and start clicking through account creation.",
+          "next": "n2_promised",
+          "tech": 0,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "Reassurance without checking stock, licenses, or approvals is a promise made on behalf of systems you do not control. It feels kind for thirty seconds and expensive all weekend."
+        },
+        {
+          "label": "Forward the stale request to the teammate who missed it and tell Lena you are waiting on them.",
+          "next": "n2_promised",
+          "tech": -1,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "The client needs recovery, not your internal mail archaeology. Preserve the audit trail, but own the service in front of the client and sort accountability internally."
+        }
+      ]
+    },
+    "n2_owned": {
+      "text": "The form is approved. You can create the account and assign a reclaimed license today. No standard laptop is available, but a loaner can be rebuilt Friday if Operations approves the exception. Lena asks, \"So what do I tell Maya?\"",
+      "hint": "A good recovery update names what is certain, what is conditional, and when the next update arrives.",
+      "choices": [
+        {
+          "label": "\"We missed the request, and I'm sorry. Her account and core apps will be ready; I'm arranging a secured loaner and will confirm hardware by noon Friday.\"",
+          "next": "n3",
+          "tech": 1,
+          "people": 3,
+          "quality": "best",
+          "feedback": "You own the miss without naming a culprit, define the achievable service, and put a clock on uncertainty. That is how trust survives an operational mistake."
+        },
+        {
+          "label": "\"Someone left this in the shared inbox, but I'm cleaning it up for them.\"",
+          "next": "n3",
+          "tech": 0,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "Throwing a colleague under the bus does not make the MSP look more competent; it tells Lena the process is nobody's responsibility. Own outward, review inward."
+        }
+      ]
+    },
+    "n2_promised": {
+      "text": "At 16:10 you discover the missing hardware and an exhausted license pool after already implying Monday was handled. Lena replies, \"I just told her manager everything was set. Is it or isn't it?\"",
+      "hint": "Once a promise is at risk, correct it early. Delay converts an operational miss into a credibility miss.",
+      "choices": [
+        {
+          "label": "Correct the update now, apologize for speaking too soon, and give the same account-plus-loaner recovery plan with a Friday checkpoint.",
+          "next": "n3",
+          "tech": 1,
+          "people": 2,
+          "quality": "best",
+          "feedback": "The cleanest recovery is an early correction with specifics. You cannot unmake the premature promise, but you can stop it from reaching Monday morning."
+        },
+        {
+          "label": "Keep working quietly and wait until Friday evening to mention the laptop risk if it still exists.",
+          "next": "end_scramble",
+          "tech": -2,
+          "people": -3,
+          "quality": "bad",
+          "feedback": "Silence spends the client's contingency time. By Friday evening, a manageable loaner decision becomes a Monday lobby surprise."
+        }
+      ]
+    },
+    "n3": {
+      "text": "Friday morning, the loaner is approved. The account exists, but Maya's role needs two project shares and a specialty app the form only calls \"the usual design stuff.\"",
+      "hint": "Access should follow a named role and owner approval, not a guess copied from the nearest employee.",
+      "choices": [
+        {
+          "label": "Ask Maya's manager to confirm the two shares and specialty app, document the response, and test sign-in on the rebuilt loaner.",
+          "next": "end_ready",
+          "tech": 3,
+          "people": 1,
+          "quality": "best",
+          "feedback": "Manager-confirmed access avoids both under-provisioning and accidental data exposure. Testing the actual loaner catches the classic 'account exists, first login fails' finale."
+        },
+        {
+          "label": "Clone the permissions of the last project coordinator so Maya has everything she might need.",
+          "next": "end_scramble",
+          "tech": -3,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "Permission cloning imports old exceptions and possibly confidential project access. Onboarding speed does not cancel least privilege."
+        }
+      ]
+    },
+    "end_ready": {
+      "text": "Monday, 07:52. The loaner is docked, sign-in is tested, and Maya's manager has the permanent-laptop ETA. Lena messages: \"Not our smoothest setup, but she won't know that. Thank you for owning it.\"\n\nYou add a shared-mailbox alert and hand the process miss to the service manager for review. Ticket closed.",
+      "end": true
+    },
+    "end_scramble": {
+      "text": "Monday starts with a borrowed conference-room PC, missing access, and three people asking which promise was real. Maya can attend orientation, but Lena now wants a manager on the postmortem.\n\nThe technical gap was recoverable; the lost contingency time was not. Ticket escalated for follow-up.",
+      "end": true
+    }
+  }
+}

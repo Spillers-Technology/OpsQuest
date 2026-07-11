@@ -1,0 +1,140 @@
+{
+  "id": "phones-down",
+  "schema": 2,
+  "ticket": "TKT-3305",
+  "title": "Every Phone at Cardinal Is Dead",
+  "hardTitle": "PHONES!!!! (calling from my cell)",
+  "priority": "P1",
+  "category": "networking",
+  "length": "short",
+  "client": "Cardinal Insurance Brokers",
+  "blurb": "An insurance office that lives on inbound calls has no phones. The clock is revenue.",
+  "hardBlurb": "no phones ring at all, clients get dead air. we are an INSURANCE OFFICE. this is my cell, call it back.",
+  "start": "n1",
+  "nodes": {
+    "n1": {
+      "text": "08:55. Renata, office manager at Cardinal Insurance, calling from her cell:\n\n\"Every desk phone is dead — no dial tone, screens say 'connecting'. Clients calling in get dead air. We're an insurance brokerage; the phones ARE the business. Internet seems fine, email's working.\"\n\nThirty seats of VoIP, and the one thing they sell — being reachable — is offline.",
+      "hint": "Two clocks run on a phones-down ticket: finding the cause, and the business missing calls RIGHT NOW. One of those has a five-minute fix that doesn't need a diagnosis.",
+      "choices": [
+        {
+          "label": "\"First, let's stop losing calls: I'll have your main number forwarded to a cell right now. THEN I'll chase the cause. Whose phone should ring?\"",
+          "next": "n2_bridged",
+          "tech": 2,
+          "people": 3,
+          "quality": "best",
+          "feedback": "The mitigation doesn't wait for the diagnosis. Main-number forwarding at the carrier or portal level takes minutes, works no matter what's broken on-site, and converts 'we're losing clients' into 'we're answering on a cell while IT works.' Stop the bleeding, then operate."
+        },
+        {
+          "label": "\"Internet fine but phones dead — that's a good clue. Let me check the phone system and I'll call you back when I know more.\"",
+          "next": "n2_tunnel",
+          "tech": 1,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "The scoping instinct is right and the clue IS good — but you just left an insurance office losing revenue-per-minute with no interim answer. Diagnosis and mitigation aren't sequential; the forward could be live before your dashboard finishes loading."
+        },
+        {
+          "label": "\"Have someone power-cycle the phone closet gear — switches, the VoIP box, everything. That usually clears it.\"",
+          "next": "n2_tunnel",
+          "tech": -2,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "Rebooting everything before checking anything is troubleshooting by ritual — and if the cause is upstream (it often is), you've added ten minutes of extra downtime, wiped the evidence, and taught the client that IT's first move is the power button."
+        }
+      ]
+    },
+    "n2_bridged": {
+      "text": "09:03. Cardinal's main number now rings Renata's cell; their receptionist is triaging from a legal pad like it's 1988, but clients hear a human. Renata's blood pressure is audibly lower.\n\nNow the cause. The phones all say 'connecting' — they have power and network, but can't reach their SIP host.",
+      "hint": "Before touching anything on-site: the phones' brain is hosted with a provider. Where would you check whether the problem is even in this building?",
+      "choices": [
+        {
+          "label": "Check the VoIP provider's status page and your other clients on the same platform before touching Cardinal's gear.",
+          "next": "n3",
+          "tech": 3,
+          "people": 0,
+          "quality": "best",
+          "feedback": "Hosted VoIP means the outage might not be in the building at all. The status page and a glance at your OTHER clients on the platform answer 'them or us?' in ninety seconds — before you spend an hour proving Cardinal's LAN innocent one cable at a time."
+        },
+        {
+          "label": "Start packet-capturing at Cardinal's firewall to watch the SIP traffic fail.",
+          "next": "n3",
+          "tech": 1,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "A real diagnostic that answers the question the slow way. The capture will show SIP registration timing out — which the provider's status page would have explained in one sentence, with an ETA attached. Check the cheap source first."
+        },
+        {
+          "label": "Factory-reset one desk phone to re-provision it as a test.",
+          "next": "n3",
+          "tech": -2,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "Thirty phones show the identical symptom at the identical time — that's never one handset's config. A factory reset diagnoses nothing, and if provisioning is unreachable (it is), you've just bricked a working phone into a paperweight with extra steps."
+        }
+      ]
+    },
+    "n2_tunnel": {
+      "text": "09:20. Twenty-five minutes of checking switches, VLANs, and the firewall — all clean. The phones still say 'connecting'. Renata calls again, tighter: \"An agent just lost a renewal call. The client called our COMPETITOR to get a quote while we were unreachable. What do I tell the owner?\"\n\nCalls are still hitting dead air. There's still no forward in place.",
+      "hint": "The diagnosis can keep running; the missed-calls problem needed solving twenty minutes ago. It still does.",
+      "choices": [
+        {
+          "label": "Stop and fix the business problem first — get the main number forwarded to a cell NOW, apologize for not doing it at 8:55, then continue the diagnosis.",
+          "next": "n3",
+          "tech": 1,
+          "people": 2,
+          "quality": "best",
+          "feedback": "Late is still leagues better than never — and the apology matters because the delay had a cost with a competitor's name on it. The lesson gets carved in: on revenue-critical outages, the workaround IS the first fix."
+        },
+        {
+          "label": "\"I'm very close on the diagnosis — a few more minutes and we'll have the real fix, which beats a workaround.\"",
+          "next": "n3",
+          "tech": -1,
+          "people": -3,
+          "quality": "bad",
+          "feedback": "'Almost fixed' has been true for twenty-five minutes and the meter's running in lost renewals. The real fix might be hours out and isn't yours to control if it's the provider. Never hold a working mitigation hostage to a diagnosis in progress."
+        },
+        {
+          "label": "Escalate to L2 so someone senior owns it, and let them decide about forwarding.",
+          "next": "n3",
+          "tech": 0,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "Escalating a stuck P1 is fine — but the call forward needs no seniority, no diagnosis, and no permission. Handing L2 a still-bleeding client when you could hand them a stabilized one is escalating the wrong half of the problem."
+        }
+      ]
+    },
+    "n3": {
+      "text": "There it is: the VoIP provider's status page — 'Investigating: SIP registration failures, [your region], began 08:41. Engineers engaged.' Two of your other clients on the same platform are down too; their tickets are just arriving.\n\nProvider ETA: 'within 2 hours.' Cardinal's calls are safe on the forward. Renata asks: \"So what do we do — and what do I tell everyone?\"",
+      "hint": "Cause is upstream, mitigation is holding. What's left is communication shape: who needs to know what, at what cadence — and there are two more of your clients in the same hole.",
+      "choices": [
+        {
+          "label": "Plain-English brief for Renata (provider outage, calls safe on forward, next update at 10:30), proactive forwarding + the same brief for your OTHER two affected clients before they escalate, and a provider ticket referencing all three.",
+          "next": "end_done",
+          "tech": 2,
+          "people": 3,
+          "quality": "best",
+          "feedback": "This is the play: cadence promised and kept for the client in front of you, and the outage turned INTO proactive service for the two clients who haven't finished dialing you yet. Calling them before they call you is the single cheapest loyalty-builder in the business."
+        },
+        {
+          "label": "Tell Renata it's the provider and you'll let her know when it's resolved.",
+          "next": "end_done",
+          "tech": 0,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "Accurate, but 'when it's resolved' is an open-ended silence — the anxious refresh-and-wonder hours are what clients remember. A named next-update time ('10:30, even if nothing changed') costs nothing and converts waiting into confidence. And two other clients are still un-forwarded."
+        },
+        {
+          "label": "\"It's the provider's fault — nothing we can do until they fix it. I'll close our ticket and track theirs.\"",
+          "next": "end_done",
+          "tech": -1,
+          "people": -3,
+          "quality": "bad",
+          "feedback": "'Not our fault' and 'nothing we can do' are both wrong: the forward, the comms cadence, and the proactive calls to the other two clients are ALL yours to do. Clients don't pay an MSP to relay blame upstream — they pay for someone who owns the outcome regardless of whose outage it is."
+        }
+      ]
+    },
+    "end_done": {
+      "text": "10:47. Provider restores SIP registration; Cardinal's desk phones wake up one by one. You verify inbound and outbound with Renata live, drop the forward, and note the timeline.\n\nTicket notes: hosted-VoIP regional outage (provider inc. #4471), main number forwarded at 09:03, zero client-facing downtime after the bridge. Same mitigation deployed proactively for two other affected clients. Follow-up logged: document a 'phones-down playbook' — forward first, diagnose second — for every VoIP client.\n\nRenata, in the follow-up email: \"We only lost ONE call all morning. The owner wants to know if that forwarding thing can be automatic.\"\n\n(It can. That's a nice little project ticket.)\n\nTicket closed.",
+      "end": true
+    }
+  }
+}

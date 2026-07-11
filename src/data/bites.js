@@ -1,5 +1,6 @@
-// Bite decks: { id, title, questions: [{ q, options: [..], answer: idx, why }] }
+// Bite decks: { id, title, questions: [{ q, options: [..], answer: idx, why, hint }] }
 // M1 set: Networking First Steps / Ticket Craft / Security Basics.
+// `hint` shows only in Assisted (easy) mode — a nudge toward the mental model, never the answer.
 
 export const BITE_DECKS = [
   {
@@ -12,12 +13,14 @@ export const BITE_DECKS = [
         options: ['The ISP is down', 'DNS', 'A bad network cable', 'The firewall is blocking port 443'],
         answer: 1,
         why: 'Raw IP works but names don\'t resolve — that\'s DNS. If the ISP or cable were the problem, the IP ping would fail too. (Yes: it\'s always DNS.)',
+        hint: 'Numbers work, names don\'t. Which service turns names into numbers?',
       },
       {
         q: 'Which command shows a Windows PC\'s IP address, default gateway, AND DNS servers in one shot?',
         options: ['netstat -an', 'tracert', 'ipconfig /all', 'nslookup'],
         answer: 2,
         why: '`ipconfig /all` is the first command of nearly every network ticket: address, gateway, DNS, DHCP server, and lease info in one screen.',
+        hint: 'You want the machine\'s own network identity card, not a test of the path or of one service.',
       },
       {
         q: 'A PC shows an address of 169.254.23.7. What is it telling you?',
@@ -29,6 +32,7 @@ export const BITE_DECKS = [
         ],
         answer: 1,
         why: '169.254.x.x is APIPA — the "I asked for an address and nobody answered" range. Look at the DHCP server, the switch port, or the cable between them.',
+        hint: '169.254.x.x is a special range no admin assigns on purpose — the machine picked it itself. Why would it have to?',
       },
       {
         q: 'One user\'s internet is crawling; everyone else at the site is fine. Best first move?',
@@ -40,6 +44,7 @@ export const BITE_DECKS = [
         ],
         answer: 3,
         why: 'One affected user means the shared infrastructure is probably fine — never bounce a firewall 30 people are using for a one-person problem. Swap variables until the fault follows one of them.',
+        hint: 'One user affected = the shared gear is probably innocent. How do you make the fault reveal which variable it follows?',
       },
       {
         q: '`ping -t 10.0.0.5` is especially handy during a fix because it…',
@@ -51,6 +56,7 @@ export const BITE_DECKS = [
         ],
         answer: 0,
         why: 'The -t flag pings until you stop it (Ctrl+C). Start it before you reboot a device and you\'ll see the exact moment it comes back — no guessing, no "try it now… how about now?"',
+        hint: 'Think about rebooting a switch remotely: what would you want running on your screen the whole time?',
       },
     ],
   },
@@ -70,6 +76,7 @@ export const BITE_DECKS = [
         ],
         answer: 2,
         why: 'A note is for the NEXT person who opens the ticket — maybe you, at 2 AM, six months from now. What you saw, what you changed, how you confirmed it, and what to watch for. "Worked on issue" tells them nothing.',
+        hint: 'Imagine opening this ticket cold in six months. Which note lets you skip re-doing the whole investigation?',
       },
       {
         q: 'Your P1 SLA says "respond within 15 minutes." What actually counts as responding?',
@@ -81,6 +88,7 @@ export const BITE_DECKS = [
         ],
         answer: 1,
         why: 'Response time and resolution time are different clocks. Responding means a human acknowledged the problem, understood the impact, and started working — silently self-assigning the ticket helps you, not the client.',
+        hint: 'Response and resolution are two different clocks. Which option is the smallest thing a CLIENT would experience as "they\'re on it"?',
       },
       {
         q: 'You\'re escalating a ticket to L2. What does a good escalation include?',
@@ -92,6 +100,7 @@ export const BITE_DECKS = [
         ],
         answer: 1,
         why: 'An escalation is a handoff, not a hot potato. Scope, steps tried, results, and your working theory let L2 start from where you stopped instead of from zero. That\'s the difference between escalating and just... forwarding.',
+        hint: 'A good escalation lets the next tech start where you STOPPED. What would they need to not repeat your work?',
       },
       {
         q: 'The fix worked. When is it right to close the ticket?',
@@ -103,6 +112,7 @@ export const BITE_DECKS = [
         ],
         answer: 2,
         why: '"It works on my screen" isn\'t resolved — the user confirming is. And a ticket closed without cause and fix in the notes is a repeat ticket waiting for a tech with no history to work from.',
+        hint: 'Two things have to be true: the human agrees it\'s fixed, and the paper trail survives you.',
       },
       {
         q: 'A client emails you directly about a new problem instead of the help desk. Best move?',
@@ -114,6 +124,7 @@ export const BITE_DECKS = [
         ],
         answer: 2,
         why: 'Untracked work is invisible work: no SLA clock, no history, no coverage when you\'re out sick. Never punish the client for asking — but always get the work into the system, and teach the faster path kindly.',
+        hint: 'Two goals at once: the client feels helped, AND the work exists somewhere other than your inbox.',
       },
     ],
   },
@@ -133,6 +144,7 @@ export const BITE_DECKS = [
         ],
         answer: 1,
         why: 'No single detail is proof — it\'s the pattern. Manufactured urgency, "keep this between us," a payment method leadership never uses, and a built-in excuse for why you can\'t verify. Each one exists to stop you from checking.',
+        hint: 'Each detail alone has an innocent explanation. What do all of them have in common as a GOAL?',
       },
       {
         q: 'Why does MFA matter even if a user\'s password gets phished?',
@@ -144,6 +156,7 @@ export const BITE_DECKS = [
         ],
         answer: 1,
         why: 'MFA assumes the password WILL eventually leak — and makes that survivable. The attacker with a perfect stolen password hits a second lock they don\'t hold. It\'s the single highest-value control for account takeover.',
+        hint: 'Assume the password is already stolen. What does the attacker still not have?',
       },
       {
         q: 'A caller asks for a password reset. What\'s a solid way to verify it\'s really them?',
@@ -155,6 +168,7 @@ export const BITE_DECKS = [
         ],
         answer: 3,
         why: 'Caller ID is spoofable, voices are cloneable, and usernames aren\'t secrets. A callback to a number on file is out-of-band — the attacker would need to control the real phone, not just the call. Verify through a channel THEY don\'t choose.',
+        hint: 'Three of these are things the CALLER controls or can fake. Which one runs through a channel they don\'t choose?',
       },
       {
         q: 'What is "least privilege"?',
@@ -166,6 +180,7 @@ export const BITE_DECKS = [
         ],
         answer: 1,
         why: 'Every permission an account holds is something an attacker inherits the moment that account is compromised. Least privilege doesn\'t stop the phish — it shrinks the blast radius when one lands.',
+        hint: 'Think blast radius: when an account IS eventually compromised, what determines how bad it gets?',
       },
       {
         q: "A user gets MFA prompts on their phone that they didn't trigger. What does that mean, and what should they do?",
@@ -177,6 +192,7 @@ export const BITE_DECKS = [
         ],
         answer: 2,
         why: "An MFA prompt you didn't cause means someone passed the password check. \"Approve one to make it stop\" is exactly the fatigue attack that breached Uber. Deny, report, reset — the prompts are the alarm working.",
+        hint: 'Work backwards: what has to have ALREADY happened for that prompt to appear at all?',
       },
     ],
   },

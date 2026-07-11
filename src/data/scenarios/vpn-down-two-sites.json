@@ -1,0 +1,268 @@
+{
+  "id": "vpn-down-two-sites",
+  "schema": 2,
+  "ticket": "TKT-3104",
+  "title": "HQ-to-Branch VPN Outage",
+  "hardTitle": "BRANCH ERP DEAD maybe internet?? both offices calling",
+  "priority": "P1",
+  "category": "networking",
+  "length": "medium",
+  "client": "Tandem Ridge Supply",
+  "blurb": "The branch lost its site-to-site VPN to HQ and cannot reach the ERP during order entry.",
+  "hardBlurb": "cedar branch says ERP spins. HQ says everything fine. two managers want updates and somebody mentioned rebooting firewall",
+  "start": "n1",
+  "nodes": {
+    "n1": {
+      "text": "10:17. Tandem Ridge's Cedar branch reports that ERP and HQ file shares stopped working at 10:09. Public websites still load at Cedar. HQ users can reach ERP normally.\n\nCedar manager Lena Ortiz says eight order-entry staff are idle. HQ manager Bram Cole messages separately: \"If this is our firewall, tell me before anyone touches it. Shipping is in full swing.\"",
+      "hint": "Establish scope and a communication rhythm before changing either edge. One site's internet working does not prove the tunnel or the far-side path is healthy.",
+      "choices": [
+        {
+          "label": "Declare a P1 cross-site incident, open a shared timeline, tell both managers the next update is in 15 minutes, and compare tunnel/edge health at HQ and Cedar.",
+          "next": "n2",
+          "tech": 2,
+          "people": 3,
+          "quality": "best",
+          "feedback": "A common timeline prevents two managers from receiving two versions of the outage. Comparing both ends before touching either one distinguishes tunnel failure from internet or internal-service failure."
+        },
+        {
+          "label": "Focus on Cedar because only Cedar users are affected; ask Lena to reboot the branch firewall.",
+          "next": "n2_rebooted",
+          "tech": -2,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "The symptom appears at Cedar, but either VPN peer can cause it. A blind reboot also drops Cedar's working internet and erases volatile evidence before you know which side is unhealthy."
+        },
+        {
+          "label": "Call the Cedar ISP first and leave Bram a voicemail that networking is investigating.",
+          "next": "n2",
+          "tech": 0,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "ISP involvement may be needed, but Cedar's public internet works and you have not checked the tunnel state. A scheduled shared update will serve both sites better than an open-ended voicemail."
+        }
+      ]
+    },
+    "n2": {
+      "text": "Both firewalls are reachable through their management channels. Cedar's WAN shows stable latency and no loss. HQ's primary circuit also looks clean. The IPsec monitor says Cedar is initiating, but HQ logs answer with \"no matching peer proposal.\"\n\nAt 09:58 — eleven minutes before impact — HQ's firewall configuration revision changed. The audit entry shows a service account used by your RMM automation.",
+      "hint": "The negotiation log and change timestamp point toward configuration, but verify the exact delta and preserve rollback before acting.",
+      "choices": [
+        {
+          "label": "Diff the 09:58 revision against the last known-good config, export the current state, and check whether the Cedar peer parameters changed.",
+          "next": "n3_config",
+          "tech": 3,
+          "people": 1,
+          "quality": "best",
+          "feedback": "Timestamp correlation is a lead, not yet a verdict. A targeted diff identifies the change and gives you a rollback artifact without disturbing HQ's live shipping traffic."
+        },
+        {
+          "label": "Roll the entire HQ firewall back to last night's backup immediately.",
+          "next": "n3_risk",
+          "tech": -1,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "Rollback is plausible, but restoring the whole appliance may overwrite unrelated security and routing changes. Find the smallest reversible delta first."
+        },
+        {
+          "label": "Assume the log is stale and run continuous pings through the tunnel while waiting for the Cedar ISP.",
+          "next": "n3_config",
+          "tech": -2,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "A failed IKE proposal occurs before tunnel traffic can pass; more pings cannot solve negotiation. The logged config change is stronger evidence than a generic ISP theory."
+        }
+      ]
+    },
+    "n2_rebooted": {
+      "text": "Lena reboots Cedar's firewall. The branch loses phones and internet for six minutes, two web orders time out, and the VPN returns in the same failed state. The Cedar logs that could have shown the first negotiation failure are gone.\n\nBram writes: \"Was that us? Shipping just heard Cedar went completely dark.\"",
+      "hint": "The reboot cost evidence and trust. Re-establish facts from both surviving peers, own the impact, and avoid repeating the gamble at HQ.",
+      "choices": [
+        {
+          "label": "Tell both managers exactly what the reboot affected, set the next update time, and compare HQ's surviving VPN logs and recent config revisions against Cedar's rebuilt state.",
+          "next": "n3_config",
+          "tech": 2,
+          "people": 3,
+          "quality": "best",
+          "feedback": "A bad change becomes worse when hidden. The surviving HQ logs and configuration history can still lead to root cause, while direct ownership keeps rumor from filling the communication gap."
+        },
+        {
+          "label": "Say Cedar briefly lost internet during diagnostics, then reboot HQ's firewall to reset both ends.",
+          "next": "n3_risk",
+          "tech": -3,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "Calling an unplanned outage 'diagnostics' spends credibility, and rebooting the healthy HQ edge doubles the blast radius. Symmetry is not a troubleshooting method."
+        },
+        {
+          "label": "Wait for Cedar to stabilize fully before checking HQ logs.",
+          "next": "n3_config",
+          "tech": -1,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "Internet has already stabilized and the tunnel has not. Waiting burns the order-entry clock while the untouched peer still holds useful evidence."
+        }
+      ]
+    },
+    "n3_config": {
+      "text": "The diff is narrow: automation replaced Cedar's IPsec phase-two group from 14 to 19 at HQ, but Cedar still proposes 14. The same job was meant to update a lab firewall whose hostname differs by one character. No other HQ settings changed.\n\nYour 10:32 update is due now. Lena wants an ETA; Bram wants assurance that rollback will not interrupt HQ.",
+      "hint": "Communicate confirmed facts and a bounded plan. A one-setting repair is safer than restarting or restoring the whole edge.",
+      "choices": [
+        {
+          "label": "Tell both managers the mismatch and impact, propose restoring only the HQ peer value with a saved rollback, estimate ten minutes, and request Bram's emergency-change approval.",
+          "next": "n4_change",
+          "tech": 3,
+          "people": 3,
+          "quality": "best",
+          "feedback": "Specific scope turns 'firewall work' into one reviewable change. Approval, rollback, and an honest ETA protect the healthy HQ services while giving Cedar a credible path back."
+        },
+        {
+          "label": "Fix the value silently because it is obviously wrong, then update everyone after the tunnel returns.",
+          "next": "n4_change",
+          "tech": 2,
+          "people": -2,
+          "quality": "ok",
+          "feedback": "The change is technically precise, but Bram explicitly asked to know before anyone touched HQ. A correct fix can still violate the client's emergency-change expectation."
+        },
+        {
+          "label": "Restore the entire previous HQ configuration to avoid manually editing a security setting.",
+          "next": "n3_risk",
+          "tech": -2,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "The diff proves only one peer parameter is wrong. Whole-config restore adds unrelated risk and makes the rollback larger than the fault."
+        }
+      ]
+    },
+    "n3_risk": {
+      "text": "The broad HQ action triggers a failover. Shipping scanners pause, VoIP calls drop for four minutes, and the tunnel still does not establish: the restored image preserved the newer group setting. Bram calls directly.\n\n\"You said Cedar was down. Why did my warehouse just go quiet?\"",
+      "hint": "The blast radius has expanded. Stop broad actions, own the impact, and use the remaining config evidence to make the smallest correction.",
+      "choices": [
+        {
+          "label": "Own the unnecessary disruption, confirm HQ services have recovered, diff the specific Cedar peer, and seek approval for a one-value correction with rollback.",
+          "next": "n4_change_messy",
+          "tech": 2,
+          "people": 3,
+          "quality": "best",
+          "feedback": "You cannot un-drop the calls, but you can stop compounding the error. Clear ownership and a surgical next step are the beginning of technical and relationship recovery."
+        },
+        {
+          "label": "Explain that brief interruptions are normal during P1 diagnostics and continue restoring older configurations.",
+          "next": "end_prolonged",
+          "tech": -3,
+          "people": -3,
+          "quality": "bad",
+          "feedback": "Unapproved collateral outages are not normal just because the original incident is urgent. Normalizing them avoids learning and invites a larger failure."
+        },
+        {
+          "label": "Wait for Bram to calm down before making any more changes.",
+          "next": "n4_change_messy",
+          "tech": 0,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "Pausing broad changes is wise, but the client needs facts and a controlled proposal, not silence while the branch keeps writing paper orders."
+        }
+      ]
+    },
+    "n4_change": {
+      "text": "Bram approves the peer-only change. You restore group 14 at HQ, commit it, and watch both IKE phases establish without interrupting other HQ sessions. Cedar can ping ERP again.\n\nLena asks whether staff should resume order entry immediately.",
+      "hint": "A green tunnel is necessary, not sufficient. Validate the business transaction and account for work created during the outage.",
+      "choices": [
+        {
+          "label": "Have one Cedar user complete a read and test order in ERP, check tunnel counters and latency, then release the team and help reconcile paper orders.",
+          "next": "n5_close",
+          "tech": 3,
+          "people": 2,
+          "quality": "best",
+          "feedback": "Protocol-up is not business-up. A representative transaction proves the application path, and paper-order reconciliation prevents recovery from creating duplicate customer orders."
+        },
+        {
+          "label": "Tell everyone the tunnel is green and close the incident.",
+          "next": "end_messy",
+          "tech": 0,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "The network metric is encouraging, but users experienced an ERP outage, not an IKE-status outage. Validate what they actually do before declaring restoration."
+        },
+        {
+          "label": "Run a speed test at Cedar and release users if internet bandwidth looks normal.",
+          "next": "end_messy",
+          "tech": -1,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "Public internet bandwidth does not validate the private ERP path. Test the recovered service, not the tool that happens to be easy to run."
+        }
+      ]
+    },
+    "n4_change_messy": {
+      "text": "After a tense approval call, the one-value correction brings the tunnel up. HQ shipping is stable again, and Cedar can reach ERP. Bram says, \"I want proof before anybody says resolved. Lena has paper orders everywhere.\"",
+      "hint": "Trust is damaged, so verification and explicit accounting for collateral impact matter more than a quick green status.",
+      "choices": [
+        {
+          "label": "Run an ERP test transaction with Cedar, verify both edges and HQ shipping, then coordinate paper-order reconciliation and document the unplanned HQ interruption.",
+          "next": "end_messy",
+          "tech": 3,
+          "people": 3,
+          "quality": "best",
+          "feedback": "Expanded verification matches the expanded impact. Documenting your own collateral outage is uncomfortable and essential; incident notes are not a highlight reel."
+        },
+        {
+          "label": "Send screenshots of the green tunnel to both managers and mark resolved.",
+          "next": "end_messy",
+          "tech": 0,
+          "people": -2,
+          "quality": "ok",
+          "feedback": "Screenshots prove a protocol state, not recovered orders or stable shipping. When trust is low, evidence must map to the client's business impact."
+        },
+        {
+          "label": "Ask Cedar to resume work and report back only if something fails.",
+          "next": "end_messy",
+          "tech": -1,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "That makes users the monitoring system after your change disrupted both sites. Active validation is owed here."
+        }
+      ]
+    },
+    "n5_close": {
+      "text": "The test order posts, inventory updates at HQ, and latency stays normal. Fourteen paper orders remain to enter. The automation account is disabled pending review; the lab/HQ hostname collision is confirmed.\n\nBoth managers join the final update.",
+      "hint": "Close both the outage and the change-control gap that caused it, with one shared version of events.",
+      "choices": [
+        {
+          "label": "Give a joint timeline, confirm user validation and paper-order ownership, explain the automation error plainly, and log corrective actions for account scoping and hostname safeguards.",
+          "next": "end_clean",
+          "tech": 2,
+          "people": 3,
+          "quality": "best",
+          "feedback": "A shared closeout prevents site-by-site folklore. Root cause plus assigned prevention work makes the incident complete without pretending one corrected setting is the whole lesson."
+        },
+        {
+          "label": "Say a VPN parameter drifted, service is restored, and the automation team will investigate.",
+          "next": "end_clean",
+          "tech": 1,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "Technically true, but passive language hides that an MSP automation targeted the wrong device. Plain accountability is more useful than making configuration sound weather-related."
+        },
+        {
+          "label": "Close as resolved and discuss root cause internally so the client does not lose confidence.",
+          "next": "end_messy",
+          "tech": -1,
+          "people": -3,
+          "quality": "bad",
+          "feedback": "Clients lose more confidence when they later discover a concealed provider-caused change. Transparency paired with prevention is safer than a tidy fiction."
+        }
+      ]
+    },
+    "end_clean": {
+      "text": "Cedar returns to ERP with no duplicate orders, HQ shipping never loses service, and both managers receive the same verified closeout. The wrong-target automation is contained and assigned corrective controls.\n\nLena's final message: \"Paper orders reconciled. Please tell the tunnel it is no longer allowed a mid-morning break.\"",
+      "end": true
+    },
+    "end_messy": {
+      "text": "The VPN and ERP recover, but validation, change communication, or the broad-response impact leaves cleanup behind. Orders are reconciled manually and management requests a formal review.\n\nThe technical root cause is one mismatched group; the service lesson is that one-site symptoms do not authorize two-site risk.",
+      "end": true
+    },
+    "end_prolonged": {
+      "text": "The branch remains on paper far longer than necessary while clean carrier paths and explicit VPN errors are ignored, or the incident record omits known impact. Leadership escalates beyond the service desk.\n\nWhen the peer mismatch is finally corrected, the tunnel returns in minutes. The harder repair is the account of what took so long.",
+      "end": true
+    }
+  }
+}

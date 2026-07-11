@@ -1,0 +1,170 @@
+{
+  "id": "midday-firmware",
+  "schema": 2,
+  "ticket": "TKT-3303",
+  "title": "Firewall Firmware: Now or Never?",
+  "hardTitle": "FW: FW: vendor security notice???",
+  "priority": "P4",
+  "category": "change-mgmt",
+  "length": "short",
+  "client": "Beacon Print Co. / Ridgeline Credit Union",
+  "blurb": "Same firmware update, two very different clients. When is 'just do it now' the right call?",
+  "hardBlurb": "got this from the firewall company, is this something? do we have to do anything? - Marcy",
+  "start": "n1",
+  "nodes": {
+    "n1": {
+      "text": "11:40, Tuesday. A vendor security advisory: firmware update for the firewall model you deploy everywhere — patches a remote-crash bug being exploited in the wild, plus the VPN drop issue Beacon Print has complained about twice.\n\nFirst in your queue: Beacon Print Co. Twelve seats, everything wired, no VPN tunnels except the owner's laptop, no security subscriptions on the box, no compliance regime. The update takes about six minutes of downtime. You have a free half hour right now.",
+      "hint": "Change risk isn't one-size-fits-all: what does THIS client lose during six minutes of downtime, and what do they lose by waiting with an actively exploited bug?",
+      "choices": [
+        {
+          "label": "Skim the release notes for breaking changes, snapshot the config, give Beacon's office manager a two-minute heads-up — then push it now.",
+          "next": "n2_smooth",
+          "tech": 2,
+          "people": 2,
+          "quality": "best",
+          "feedback": "This is what right-sized change management looks like: for a small wired shop with no inline security services, an actively-exploited bug outweighs six polite minutes of downtime — as long as you read the notes, keep a rollback copy, and the client hears about it BEFORE the blip instead of during it."
+        },
+        {
+          "label": "Push it right now — it's six minutes, they won't even notice.",
+          "next": "n2_blip",
+          "tech": 0,
+          "people": -1,
+          "quality": "ok",
+          "feedback": "The risk read is actually right for this client — it's the silence that isn't. 'They won't notice' is a bet you lose the one time the box doesn't come back, and there's no config snapshot and nobody knew you were in there."
+        },
+        {
+          "label": "Never touch firmware during business hours — schedule it for the Sunday 2 AM maintenance window like everything else.",
+          "next": "n2_wait",
+          "tech": -1,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "Blanket rules feel safe but this one leaves an actively-exploited remote-crash bug on an internet-facing box for five days to protect a 12-seat print shop from six minutes of lunch-hour downtime. Change windows exist to manage risk — not to outrank it."
+        }
+      ]
+    },
+    "n2_smooth": {
+      "text": "11:52. Firewall's back on the new firmware, VPN bug fixed, config snapshot archived. Marcy at Beacon barely looked up: \"That was the internet thing? Didn't notice.\"\n\nNext in the queue, same advisory: Ridgeline Credit Union. Sixty seats, IPS and content filtering subscriptions doing real work inline, an examiner-audited change-control policy, and a branch that processes wires until 5 PM.",
+      "hint": "Same box, same bug — completely different blast radius. What do security subscriptions, compliance, and wire cutoffs change about 'just do it now'?",
+      "choices": [
+        {
+          "label": "File a change request: after-hours window, rollback plan, verify IPS signatures and filtering policies post-update, client sign-off first.",
+          "next": "n3",
+          "tech": 3,
+          "people": 1,
+          "quality": "best",
+          "feedback": "At Ridgeline the firewall isn't a router with opinions — it's an inline security control at a regulated financial institution. Firmware can reset or subtly break IPS and filter behavior, and an undocumented midday change is an audit finding even when it works. Same patch, opposite process. That's the whole skill."
+        },
+        {
+          "label": "Push it now like Beacon's — consistency across clients, and the bug is being exploited.",
+          "next": "n3",
+          "tech": -3,
+          "people": -1,
+          "quality": "bad",
+          "feedback": "Consistency of PROCESS, not consistency of action. Six minutes of midday downtime at a credit union running wires, with inline IPS that might not come back configured — that's not patching, that's gambling with someone's compliance posture. The bug is real; so is the change-control policy the examiners will ask about."
+        },
+        {
+          "label": "Hold Ridgeline entirely — too sensitive to touch, revisit next quarter.",
+          "next": "n3",
+          "tech": -1,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "Half right: not now. But 'not now' and 'not for months' are different answers when the bug is being exploited in the wild. Sensitive clients don't get skipped — they get the formal fast-track: documented change, near-term window, extra verification."
+        }
+      ]
+    },
+    "n2_blip": {
+      "text": "11:47. Mid-reboot, the ticket line rings: Marcy at Beacon. \"The internet just died? The owner's on a video call with a client and he is NOT thrilled.\"\n\nThe firewall comes back healthy on the new firmware about ninety seconds later. But the phone is still warm.",
+      "hint": "The update was fine; the surprise wasn't. What does Marcy need to hear right now — and what does the next client on the advisory list deserve that Beacon didn't get?",
+      "choices": [
+        {
+          "label": "Own it plainly: security update, should have called first, it's done and the VPN bug they reported is fixed too. Then handle Ridgeline Credit Union — the next client on the advisory — through a proper change request.",
+          "next": "n3",
+          "tech": 1,
+          "people": 2,
+          "quality": "best",
+          "feedback": "A clean recovery: no jargon, no minimizing, and the miss becomes the lesson — the heads-up costs two minutes and buys away this exact phone call. And Ridgeline, with inline IPS and examiners, is the client where the shortcut would REALLY have hurt."
+        },
+        {
+          "label": "\"That was a critical security patch — it couldn't wait. You'll thank us when you don't get hacked.\"",
+          "next": "n3",
+          "tech": 0,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "Even when the technical call was defensible, this answer converts a communication miss into condescension. Clients don't experience your risk calculus — they experience their owner's frozen video call and a vendor who won't say 'should have warned you.'"
+        },
+        {
+          "label": "Tell Marcy it was a brief ISP blip and move on to the next client.",
+          "next": "n3",
+          "tech": -2,
+          "people": -3,
+          "quality": "bad",
+          "feedback": "Lying about a change you made is the single fastest way to lose a client — and it's the kind of lie logs remember even when people don't. One awkward honest call now, or the trust conversation later. There's no third option."
+        }
+      ]
+    },
+    "n2_wait": {
+      "text": "Thursday, 09:15. Beacon's firewall drops offline — the exact remote-crash bug from the advisory, found by exactly the kind of internet-wide scanning the vendor warned about. It reboots itself, drops again an hour later. The owner wants to know why the printers keep losing the internet.\n\nThe patch you scheduled for Sunday takes six minutes. You push it now, during the third outage.",
+      "hint": "The window was five days; the exploit was faster. What does this teach about matching change timing to actual risk — and what do you tell the client?",
+      "choices": [
+        {
+          "label": "Patch it now, tell the owner honestly that a fix existed Tuesday and the delay was a process default you're correcting — then reassess every other client on the advisory today, fast-tracking the low-risk ones.",
+          "next": "n3",
+          "tech": 2,
+          "people": 2,
+          "quality": "best",
+          "feedback": "The honest version costs one uncomfortable sentence and buys back credibility; the quiet version costs nothing today and everything when they read the advisory date. And the real fix is systemic: risk-tiering the advisory across your whole client list instead of one calendar rule for everyone."
+        },
+        {
+          "label": "Patch it now and log it as an emergency fix — no need to mention Tuesday's advisory.",
+          "next": "n3",
+          "tech": 0,
+          "people": -2,
+          "quality": "bad",
+          "feedback": "The advisory is public and dated; the outage timeline is in your own ticket system. When those two documents meet — and at an MSP, they always meet — 'emergency fix' reads as 'sat on it.' Owning the delay is cheaper than being caught softening it."
+        },
+        {
+          "label": "Patch it now, and keep Sunday windows as policy — one exploited bug doesn't justify midday changes.",
+          "next": "n3",
+          "tech": -1,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "Discipline isn't the same as rigidity. A policy that produced three client outages this week is asking for a risk-based exception lane: actively-exploited plus low-blast-radius should equal 'today, with a heads-up' — not 'Sunday, with fingers crossed.'"
+        }
+      ]
+    },
+    "n3": {
+      "text": "End of day. The advisory response wraps: Beacon patched, Ridgeline's change request filed for tomorrow's 10 PM window with IPS verification steps and client sign-off, and the remaining eleven clients on this firewall model triaged into 'today with a heads-up' and 'scheduled window' lists based on what their firewalls actually do.\n\nYour service manager glances at the list: \"Good split. Write it up as the playbook for next time?\"",
+      "hint": "The judgment you exercised today — same patch, different treatment by client risk — is only durable if it survives you. What makes it a playbook instead of a memory?",
+      "choices": [
+        {
+          "label": "Write the one-pager: the risk questions (inline security services? compliance? downtime cost? exploit status?), the two lanes, and the heads-up script. Attach it to the advisory ticket.",
+          "next": "end_done",
+          "tech": 2,
+          "people": 1,
+          "quality": "best",
+          "feedback": "Now the next advisory takes twenty minutes instead of a day, and the newest tech makes the same call the senior one would. Turning good judgment into a checklist is how one person's experience becomes the whole desk's."
+        },
+        {
+          "label": "\"It's common sense — anyone would split it the same way.\"",
+          "next": "end_done",
+          "tech": 0,
+          "people": 0,
+          "quality": "ok",
+          "feedback": "It isn't, and they wouldn't — today's queue contained both 'patch everything instantly' and 'wait for Sunday everywhere' as live options. Common sense that isn't written down gets re-derived from scratch, wrongly, at the worst time."
+        },
+        {
+          "label": "Forward the vendor advisory to the whole team FYI — that covers it.",
+          "next": "end_done",
+          "tech": -1,
+          "people": 0,
+          "quality": "bad",
+          "feedback": "The advisory says what the bug is; it says nothing about which of YOUR clients can eat six minutes at lunch and which have examiners. The forward without the framework just recreates today's fork in everyone else's queue."
+        }
+      ]
+    },
+    "end_done": {
+      "text": "Ticket notes: vendor advisory triaged across thirteen clients on affected model. Low-blast-radius sites patched same-day with client heads-up and config snapshots; regulated/inline-security sites scheduled through change control with post-update verification. Zero unplanned outages after remediation.\n\nThe playbook gets its first reuse eleven days later, on a switch advisory. It takes the on-call tech nineteen minutes.\n\nTicket closed.",
+      "end": true
+    }
+  }
+}

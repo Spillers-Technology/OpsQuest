@@ -1,0 +1,47 @@
+services:
+  server:
+    build: .
+    image: ghcr.io/spillers-technology/opsquest-server:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment: &server-environment
+      SESSION_SECRET: ${SESSION_SECRET}
+      ADMIN_USER: ${ADMIN_USER}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      SQLITE_PATH: /app/data/opsquest.db
+      # DATABASE_URL: postgresql://opsquest:${POSTGRES_PASSWORD}@postgres:5432/opsquest
+    volumes:
+      - ./data:/app/data
+
+  postgres:
+    image: postgres:17-alpine
+    profiles: ["postgres"]
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: opsquest
+      POSTGRES_USER: opsquest
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U opsquest -d opsquest"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Seeding needs the scenario JSON files from the repository checkout.
+  server-seed:
+    build: .
+    image: ghcr.io/spillers-technology/opsquest-server:latest
+    profiles: ["seed"]
+    command: ["npm", "run", "seed"]
+    environment:
+      <<: *server-environment
+    volumes:
+      - ./data:/app/data
+      - ../src/data/scenarios:/src/data/scenarios:ro
+
+volumes:
+  postgres-data:
