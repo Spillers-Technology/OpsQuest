@@ -98,7 +98,9 @@ Bite decks (M1, shipped, unchanged since): Networking First Steps (ping/DNS/DHCP
 
 ## Guardrails (owner-agreed)
 - Content > features. New scenarios beat new mechanics.
-- No backend before M3 — local-only keeps M0 shippable tonight.
+- No backend before M3 — historical M0 guardrail, superseded when the optional
+  content server shipped. The bundled JSON remains the offline floor, and the
+  app must continue working without the server.
 - Anonymize any real-ticket material before it becomes content.
 - Keep deps minimal; resist adding react-navigation unless M2+ genuinely needs it.
 
